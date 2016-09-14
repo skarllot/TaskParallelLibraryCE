@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel (WinCE)", "TaskParallel (NET35, WinCE)\TaskParallel (WinCE).csproj", "{ED6B187A-B594-43BE-98CB-818A556F12C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.Tests (NET35, WinCE)", "TaskParallel.Tests (NET35, WinCE)\TaskParallel.Tests (NET35, WinCE).csproj", "{C18102E8-2979-4A39-8A5B-40B9BD53D993}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4532FDDB-02D5-4070-A1BA-0E3702B6B9B5}"
+	ProjectSection(SolutionItems) = preProject
+		common.vs2008.vsmdi = common.vs2008.vsmdi
+		SmartDevice.testrunConfig = SmartDevice.testrunConfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = common.vs2008.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED6B187A-B594-43BE-98CB-818A556F12C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED6B187A-B594-43BE-98CB-818A556F12C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED6B187A-B594-43BE-98CB-818A556F12C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED6B187A-B594-43BE-98CB-818A556F12C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C18102E8-2979-4A39-8A5B-40B9BD53D993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C18102E8-2979-4A39-8A5B-40B9BD53D993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C18102E8-2979-4A39-8A5B-40B9BD53D993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C18102E8-2979-4A39-8A5B-40B9BD53D993}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
