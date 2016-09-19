@@ -384,7 +384,7 @@ namespace System.Threading.Tasks
                 ThreadPoolWait.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, continueCallback, null, -1, true);
             }
 
-            ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
+            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
             return ar;
         }
 
@@ -635,7 +635,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
+            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
             return ar;
         }
 
@@ -668,7 +668,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
+            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
             return ar;
         }
 
@@ -1117,7 +1117,7 @@ namespace System.Threading.Tasks
                 }, null);
             }
 
-            var done = waitDone.WaitOne(millisecondsTimeout);
+            var done = waitDone.WaitOne(millisecondsTimeout, false);
             waitDone.Close();
 
             if (exceptions.Count > 0)
@@ -1231,11 +1231,11 @@ namespace System.Threading.Tasks
                     waitDone.Set();
                 }, null);
 
-                if (waitDone.WaitOne(0))
+                if (waitDone.WaitOne(0, false))
                     break;
             }
 
-            var done = waitDone.WaitOne(millisecondsTimeout);
+            var done = waitDone.WaitOne(millisecondsTimeout, false);
             waitDone.Close();
 
             if (exceptions.Count > 0)
@@ -1401,7 +1401,7 @@ namespace System.Threading.Tasks
                 task._taskCompletedEvent.Set();
             };
             var timeoutEvent = new ManualResetEvent(false);
-            ThreadPool.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
+            ThreadPoolWait.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
 
             return task;
         }

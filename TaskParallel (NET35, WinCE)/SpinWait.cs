@@ -53,7 +53,9 @@ namespace System.Threading
     /// threads must spin, each should use its own instance of SpinWait.
     /// </para>
     /// </remarks>
+#if !NETFX_CE
     [HostProtection(Synchronization = true, ExternalThreading = true)]
+#endif
     public struct SpinWait
     {
 
@@ -131,7 +133,11 @@ namespace System.Threading
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
+#if NETFX_CE
+                    Thread.Sleep(0);
+#else
                     Thread.SpinWait(4 << YIELD_THRESHOLD);
+#endif
                 }
             }
             else
@@ -147,7 +153,11 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
+#if NETFX_CE
+                Thread.Sleep(0);
+#else
                 Thread.SpinWait(4 << m_count);
+#endif
             }
 
             // Finally, increment our spin counter.
@@ -197,7 +207,7 @@ namespace System.Threading
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(
-                    "timeout", timeout, Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
+                    "timeout", Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
             }
 
             // Call wait with the timeout milliseconds
@@ -219,7 +229,7 @@ namespace System.Threading
             if (millisecondsTimeout < Timeout.Infinite)
             {
                 throw new ArgumentOutOfRangeException(
-                   "millisecondsTimeout", millisecondsTimeout, Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
+                   "millisecondsTimeout", Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
             }
             if (condition == null)
             {
@@ -262,8 +272,10 @@ namespace System.Threading
     internal static class PlatformHelper
     {
         private const int PROCESSOR_COUNT_REFRESH_INTERVAL_MS = 30000; // How often to refresh the count, in milliseconds.
+#if !NETFX_CE
         private static volatile int s_processorCount; // The last count seen.
         private static volatile int s_lastProcessorCountRefreshTicks; // The last time we refreshed.
+#endif
 
         /// <summary>
         /// Gets the number of available processors
@@ -273,6 +285,9 @@ namespace System.Threading
         {
             get
             {
+#if NETFX_CE
+                return 1;
+#else
                 int now = Environment.TickCount;
                 int procCount = s_processorCount;
                 if (procCount == 0 || (now - s_lastProcessorCountRefreshTicks) >= PROCESSOR_COUNT_REFRESH_INTERVAL_MS)
@@ -282,6 +297,7 @@ namespace System.Threading
                 }
 
                 return procCount;
+#endif
             }
         }
 

@@ -14,7 +14,9 @@ namespace System
     /// exception object.
     /// </remarks>
     [Serializable]
+#if !NETFX_CE
     [DebuggerDisplay("Count = {InnerExceptionCount}")]
+#endif
     public class AggregateException : Exception
     {
 
@@ -154,6 +156,7 @@ namespace System
             m_innerExceptions = new ReadOnlyCollection<Exception>(exceptionsCopy);
         }
 
+#if !NETFX_CE
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class with serialized data.
         /// </summary>
@@ -204,6 +207,7 @@ namespace System
             m_innerExceptions.CopyTo(innerExceptions, 0);
             info.AddValue("InnerExceptions", innerExceptions, typeof(Exception[]));
         }
+#endif
 
         /// <summary>
         /// Returns the <see cref="System.AggregateException"/> that is the root cause of this exception.

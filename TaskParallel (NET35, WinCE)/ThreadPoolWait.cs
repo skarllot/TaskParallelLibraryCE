@@ -20,17 +20,20 @@ namespace System.Threading
     /// </summary>
     public static class ThreadPoolWait
     {
-        static readonly Thread _thread = new Thread(WaitsHandler);
+        static readonly Thread _thread;
         static readonly List<WaitEntry> _registeredWaits = new List<WaitEntry>();
         static readonly ManualResetEvent _addEvent = new ManualResetEvent(true);
 
-        private static void WaitsHandler(object stateObject)
+        static ThreadPoolWait()
         {
-            if (!(stateObject is WaitEntry))
-                throw new InvalidOperationException("Invalid WaitHandle to register waiting");
+            _thread = new Thread(WaitsHandler);
+            _thread.IsBackground = true;
+            _thread.Priority = ThreadPriority.BelowNormal;
+            _thread.Start();
+        }
 
-            WaitEntry firstHandle = (WaitEntry)stateObject;
-            _registeredWaits.Add(firstHandle);
+        private static void WaitsHandler()
+        {
             var expiredList = new List<int>();
 
             while (true)
@@ -100,18 +103,38 @@ namespace System.Threading
         /// </param>
         public static void RegisterWaitForSingleObject(
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
+            long millisecondsTimeOutInterval, bool executeOnlyOnce)
+        {
+            if (millisecondsTimeOutInterval < -1 || millisecondsTimeOutInterval > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException("millisecondsTimeOutInterval");
+            }
+
+            RegisterWaitForSingleObject(waitObject, callBack, state, (int)millisecondsTimeOutInterval, executeOnlyOnce);
+        }
+
+        /// <summary>
+        /// Registers a delegate to wait for a WaitHandle, specifying a 32-bit
+        /// signed integer for the time-out in milliseconds.
+        /// </summary>
+        /// <param name="waitObject">The <see cref="WaitHandle"/> to register. Use a <see cref="WaitHandle"/> other than <see cref="Mutex"/>.</param>
+        /// <param name="callBack">The <see cref="WaitOrTimerCallback"/> delegate to call when the <paramref name="waitObject"/> parameter is signaled.</param>
+        /// <param name="state">The object that is passed to the delegate.</param>
+        /// <param name="millisecondsTimeOutInterval">
+        /// The time-out in milliseconds. If the <paramref name="millisecondsTimeOutInterval"/> parameter is 0 (zero), the function tests the object's state
+        /// and returns immediately. If <paramref name="millisecondsTimeOutInterval"/> is -1, the function's time-out interval never elapses.
+        /// </param>
+        /// <param name="executeOnlyOnce">
+        /// true to indicate that the thread will no longer wait on the <paramref name="waitObject"/> parameter after the delegate has been called;
+        /// false to indicate that the timer is reset every time the wait operation completes until the wait is unregistered.
+        /// </param>
+        public static void RegisterWaitForSingleObject(
+            WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             int millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
+
             var entry = new WaitEntry(waitObject, callBack, state,
                 millisecondsTimeOutInterval, executeOnlyOnce);
-
-            if (_thread.ThreadState == ThreadState.Unstarted)
-            {
-                _thread.IsBackground = true;
-                _thread.Priority = ThreadPriority.BelowNormal;
-                _thread.Start(entry);
-                return;
-            }
 
             Monitor.Enter(_registeredWaits);
             _registeredWaits.Add(entry);
@@ -166,6 +189,7 @@ namespace System.Threading
             public bool TimedOut { get; set; }
 
             public WaitCallbackArgs(WaitOrTimerCallback callback, object state, bool timedOut)
+                : this()
             {
                 Callback = callback;
                 State = state;
