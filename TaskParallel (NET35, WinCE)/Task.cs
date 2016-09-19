@@ -183,7 +183,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Internal constructor to create an empty task.
         /// </summary>
-        internal Task()
+        protected Task()
         {
             _stateFlags = 0;
             _taskCompletedEvent = new ManualResetEvent(false);
@@ -192,7 +192,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Internal constructor to create an already-completed task.
         /// </summary>
-        internal Task(Exception ex)
+        protected Task(Exception ex)
         {
             _stateFlags = TASK_STATE_STARTED | TASK_STATE_RAN_TO_COMPLETION;
             _taskCompletedEvent = new ManualResetEvent(true);
@@ -204,7 +204,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Internal constructor to allow creation of continue tasks.
         /// </summary>
-        internal Task(Delegate action, object state, Task continueSource)
+        protected Task(Delegate action, object state, Task continueSource)
         {
             if (action == null)
             {
@@ -311,7 +311,7 @@ namespace System.Threading.Tasks
 
         #endregion
 
-        #region Start and Begin/EndStart
+        #region Start method
 
         /// <summary>
         /// Starts the <see cref="Task"/>, scheduling it for execution to the current <see
@@ -343,76 +343,6 @@ namespace System.Threading.Tasks
                 WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
                 ThreadPoolWait.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
             }
-        }
-
-        /// <summary>
-        /// Starts the <see cref="Task"/> asynchronously, scheduling it for execution to the
-        /// current <see cref="System.Threading.ThreadPool">ThreadPool</see>.
-        /// </summary>
-        /// <param name="callback">The <see cref="AsyncCallback"/> delegate.</param>
-        /// <param name="stateObject">An object that contains state information for this request.</param>
-        /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous start.</returns>
-        /// <exception cref="InvalidOperationException">
-        /// The <see cref="Task"/> is already been started.
-        /// </exception>
-        /// <exception cref="NotSupportedException">
-        /// The <see cref="Task"/> could not be enqueued for execution.
-        /// </exception>
-        public IAsyncResult BeginStart(AsyncCallback callback, object stateObject)
-        {
-            EnsureStartOnce();
-            _runSync = false;
-
-            var ar = new StartAsyncResult(stateObject);
-            WaitOrTimerCallback internalCallback = (state, timedOut) =>
-            {
-                ar.EventHandler.Set();
-
-                if (callback != null)
-                    callback(ar);
-            };
-
-            AtomicStateUpdate(TASK_STATE_WAITINGFORACTIVATION, TASK_STATE_COMPLETED_MASK);
-            if (_continueSource == null)
-            {
-                if (!ThreadPool.QueueUserWorkItem(TaskStartAction))
-                    throw new NotSupportedException("Could not enqueue task for execution");
-            }
-            else
-            {
-                WaitOrTimerCallback continueCallback = (state, timedOut) => TaskStartAction(null);
-                ThreadPoolWait.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, continueCallback, null, -1, true);
-            }
-
-            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
-            return ar;
-        }
-
-        /// <summary>
-        /// Ends a pending asynchronous start.
-        /// </summary>
-        /// <param name="asyncResult">
-        /// An <see cref="IAsyncResult"/> that stores state information for this asynchronous operation.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="asyncResult"/> is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="asyncResult"/> was not returned by a call to the <see cref="BeginStart(AsyncCallback, object)"/> method.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">Error waiting for <see cref="WaitHandle"/> signal.</exception>
-        public void EndStart(IAsyncResult asyncResult)
-        {
-            if (asyncResult == null)
-                throw new ArgumentNullException("asyncResult");
-
-            var waitHandle = asyncResult as WaitAsyncResult;
-            if (waitHandle == null)
-                throw new ArgumentException("asyncResult was not returned by a call to the BeginStart method", "asyncResult");
-
-            if (!waitHandle.EventHandler.WaitOne())
-                throw new InvalidOperationException("Error waiting for wait handle signal");
-            waitHandle.Dispose();
         }
 
         #endregion
@@ -828,49 +758,6 @@ namespace System.Threading.Tasks
             }
 
             public bool Result { get; set; }
-
-            public void Dispose()
-            {
-                if (_doneEvent != null)
-                    _doneEvent.Close();
-            }
-        }
-
-        private class StartAsyncResult : IAsyncResult, IDisposable
-        {
-            private readonly ManualResetEvent _doneEvent;
-            private readonly object _stateObject;
-
-            public StartAsyncResult(object stateObject)
-            {
-                _doneEvent = new ManualResetEvent(false);
-                _stateObject = stateObject;
-            }
-
-            public object AsyncState
-            {
-                get { return _stateObject; }
-            }
-
-            public WaitHandle AsyncWaitHandle
-            {
-                get { return _doneEvent; }
-            }
-
-            public bool CompletedSynchronously
-            {
-                get { return false; }
-            }
-
-            public ManualResetEvent EventHandler
-            {
-                get { return _doneEvent; }
-            }
-
-            public bool IsCompleted
-            {
-                get { return _doneEvent.WaitOne(0, false); }
-            }
 
             public void Dispose()
             {

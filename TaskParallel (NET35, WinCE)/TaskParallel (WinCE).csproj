@@ -7,7 +7,7 @@
     <ProjectGuid>{ED6B187A-B594-43BE-98CB-818A556F12C7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.Threading.Tasks</RootNamespace>
+    <RootNamespace>System</RootNamespace>
     <AssemblyName>TaskParallel</AssemblyName>
     <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>WindowsCE</PlatformFamilyName>

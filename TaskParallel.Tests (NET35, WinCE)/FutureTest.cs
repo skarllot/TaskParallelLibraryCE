@@ -10,7 +10,7 @@ namespace TaskParallel.Tests
     ///to contain all TaskResultTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class TaskResultTest
+    public class FutureTest
     {
         /// <summary>
         ///A test for Result
@@ -51,7 +51,8 @@ namespace TaskParallel.Tests
             targetEx.Start();
 
             target.Wait();
-            targetEx.Wait();
+            try { targetEx.Wait(); }
+            catch (Exception) { }
 
             Assert.IsFalse(target.IsFaulted);
             Assert.IsTrue(targetEx.IsFaulted);
@@ -72,27 +73,6 @@ namespace TaskParallel.Tests
         }
 
         /// <summary>
-        ///A test for ExceptionRecorded
-        ///</summary>
-        [TestMethod()]
-        public void ExceptionRecordedTest()
-        {
-            Func<int> action = () => 1;
-            Task<int> target = new Task<int>(action);
-            target.Start();
-
-            Func<int> actionEx = () => { throw new Exception(); };
-            Task<int> targetEx = new Task<int>(actionEx);
-            targetEx.Start();
-
-            target.Wait();
-            targetEx.Wait();
-
-            Assert.IsFalse(target.ExceptionRecorded);
-            Assert.IsTrue(targetEx.ExceptionRecorded);
-        }
-
-        /// <summary>
         ///A test for Exception
         ///</summary>
         [TestMethod()]
@@ -101,11 +81,12 @@ namespace TaskParallel.Tests
             Func<int> action = () => { throw new ArgumentNullException("none"); };
             Task<int> target = new Task<int>(action);
             target.Start();
-            target.Wait();
+            try { target.Wait(); }
+            catch (AggregateException) { }
 
-            var ex = target.Exception as ArgumentNullException;
+            Assert.AreEqual(1, target.Exception.InnerExceptions.Count);
+            var ex = target.Exception.InnerExceptions[0] as ArgumentNullException;
             Assert.IsNotNull(ex);
-            Assert.AreEqual("Value can not be null.\r\nParameter name: none", ex.Message);
         }
 
         /// <summary>
@@ -150,15 +131,15 @@ namespace TaskParallel.Tests
         {
             object refobj = new object();
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
-            Task<int> target = new Task<int>(action);
-            target.BeginStart(ar =>
+            Func<object, int> action = state =>
             {
-                Assert.AreEqual(refobj, ar.AsyncState);
-                target.EndStart(ar);
-            }, refobj);
+                Assert.AreEqual(refobj, state);
+                return Interlocked.Increment(ref counter);
+            };
+            Task<int> target = new Task<int>(action, refobj);
+            target.Start();
+            target.Wait();
             Assert.AreEqual(refobj, target.AsyncState);
-            target.Wait(100);
         }
 
         /// <summary>
@@ -206,12 +187,12 @@ namespace TaskParallel.Tests
         ///</summary>
         [TestMethod()]
         [DeploymentItem("TaskParallel.dll")]
-        public void ExecuteUserWorkTest()
+        public void TaskStartActionTest()
         {
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
             Task_Accessor<int> target = new Task_Accessor<int>(action);
-            target.ExecuteQueue(null);
+            target.TaskStartAction(null);
             Assert.AreEqual(1, counter);
         }
 
@@ -238,7 +219,8 @@ namespace TaskParallel.Tests
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
-            var result = target.RunSynchronously();
+            target.RunSynchronously();
+            var result = target.Result;
             Assert.AreEqual(1, result);
             Assert.AreEqual(1, counter);
         }
@@ -258,17 +240,27 @@ namespace TaskParallel.Tests
         }
 
         /// <summary>
-        ///A test for EndStart
+        ///A test for EndWait
         ///</summary>
         [TestMethod()]
-        public void EndStartTest()
+        public void EndWaitTest()
         {
-            Exception ex = new Exception("none");
+            Exception ex = new ArgumentNullException("none");
             Func<int> action = () => { throw ex; };
             Task<int> target = new Task<int>(action);
-            var ar = target.BeginStart(null, null);
-            target.EndStart(ar);
-            Assert.AreEqual(ex, target.Exception);
+            target.Start();
+            var ar = target.BeginWait(null, null);
+
+            bool throwException = false;
+            try { target.EndWait(ar); }
+            catch (AggregateException)
+            {
+                throwException = true;
+            }
+
+            Assert.IsTrue(throwException);
+            Assert.AreEqual(1, target.Exception.InnerExceptions.Count);
+            Assert.IsTrue(target.Exception.InnerExceptions[0] is ArgumentNullException);
         }
 
         /// <summary>
@@ -279,8 +271,18 @@ namespace TaskParallel.Tests
         {
             Func<int> action = () => 1;
             Task<int> target = new Task<int>(action);
-            target.Dispose();
+
+            bool throwException = false;
+            try { target.Dispose(); }
+            catch (InvalidOperationException)
+            {
+                throwException = true;
+            }
+            Assert.IsTrue(throwException, "Should not dispose a task that is not completed");
+
             target.Start();
+            target.Wait();
+            target.Dispose();
         }
 
         /// <summary>
@@ -292,27 +294,35 @@ namespace TaskParallel.Tests
             int value = 1;
             Func<int> action = () => Interlocked.CompareExchange(ref value, 2, 1);
             Task<int> target = new Task<int>(action);
-            Func<int> action2 = () => Interlocked.CompareExchange(ref value, 3, 2);
-            Task<int> target2 = target.ContinueWith(action2);
-            target2.Start();
-            target2.Wait(100);
+            target.Start();
+            Func<Task, int> continueFunction = t =>
+            {
+                Assert.IsNotNull(t);
+                Assert.IsFalse(t.IsFaulted);
+                return Interlocked.CompareExchange(ref value, 3, 2);
+            };
+            Task<int> target2 = target.ContinueWith(continueFunction);
+            if (!target2.Wait(100))
+                Assert.Fail("Timeout waiting for continuation task signal");
+
             Assert.IsTrue(target.IsCompleted);
             Assert.IsTrue(target2.IsCompleted);
             Assert.AreEqual(3, value);
         }
 
         /// <summary>
-        ///A test for BeginStart
+        ///A test for BeginWait
         ///</summary>
         [TestMethod()]
-        public void BeginStartTest()
+        public void BeginWaitTest()
         {
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
-            target.BeginStart(ar =>
+            target.Start();
+            target.BeginWait(ar =>
             {
-                target.EndStart(ar);
+                target.EndWait(ar);
                 Assert.AreEqual(1, counter);
                 Assert.IsNull(target.Exception);
             }, null);
@@ -358,13 +368,15 @@ namespace TaskParallel.Tests
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
             var task = new Task<int>(action);
+            task.Start();
+
+            Func<Task, int> continueFunction = t => Interlocked.Increment(ref counter);
             for (int i = 0; i < TaskTest.NESTING_COUNT; i++)
             {
-                task = task.ContinueWith(action);
+                task = task.ContinueWith(continueFunction);
             }
 
             Assert.IsNotNull(task);
-            task.Start();
             task.Wait();
             Assert.AreEqual(TaskTest.NESTING_COUNT + 1, counter);
             Assert.IsNull(task.Exception);
