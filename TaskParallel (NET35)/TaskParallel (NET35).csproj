@@ -41,6 +41,10 @@
     <Compile Include="..\TaskParallel %28NET35, WinCE%29\Future.cs">
       <Link>Future.cs</Link>
     </Compile>
+    <Compile Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.Designer.cs">
+      <Link>Properties\Resources.Designer.cs</Link>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="..\TaskParallel %28NET35, WinCE%29\SpinWait.cs">
       <Link>SpinWait.cs</Link>
     </Compile>
@@ -57,18 +61,14 @@
       <Link>ThreadPoolWait.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    <EmbeddedResource Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.pt.resx">
+      <Link>Properties\Resources.pt.resx</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.pt.resx" />
+    <EmbeddedResource Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.resx">
+      <Link>Properties\Resources.resx</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

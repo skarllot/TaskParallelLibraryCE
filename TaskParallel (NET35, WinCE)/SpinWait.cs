@@ -271,8 +271,8 @@ namespace System.Threading
     /// </summary>
     internal static class PlatformHelper
     {
-        private const int PROCESSOR_COUNT_REFRESH_INTERVAL_MS = 30000; // How often to refresh the count, in milliseconds.
 #if !NETFX_CE
+        private const int PROCESSOR_COUNT_REFRESH_INTERVAL_MS = 30000; // How often to refresh the count, in milliseconds.
         private static volatile int s_processorCount; // The last count seen.
         private static volatile int s_lastProcessorCountRefreshTicks; // The last time we refreshed.
 #endif
