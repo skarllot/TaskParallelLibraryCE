@@ -2,9 +2,9 @@
 
 The package includes:
 * Task<T> for executing asynchronous operations.
-* additional Threading operation with SpinWait.
+* Additional Threading operation such as RegisterWaitForSingleObject and SpinWait.
 
-Supported on Windows CE and Pocket PC.
+Tested on Windows CE and Pocket PC.
 
 ## Authors
 Fabrício Godoy <skarllot@gmail.com>

@@ -573,7 +573,7 @@ namespace System.Threading.Tasks
         /// Waits asynchronously for the <see cref="Task"/> to complete execution
         /// within a specified time interval.
         /// </summary>
-        /// <param name="timeout">
+        /// <param name="millisecondsTimeout">
         /// A System.TimeSpan that represents the number of milliseconds to
         /// wait, or a System.TimeSpan that represents -1 milliseconds to wait
         /// indefinitely.
@@ -616,7 +616,7 @@ namespace System.Threading.Tasks
         /// <paramref name="asyncResult"/> is null.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="asyncResult"/> was not returned by a call to the <see cref="BeginWait(AsyncCallback, bool)"/> method.
+        /// <paramref name="asyncResult"/> was not returned by a call to the <see cref="BeginWait(AsyncCallback, object)"/> method.
         /// </exception>
         /// <exception cref="InvalidOperationException">Error waiting for <see cref="WaitHandle"/> signal.</exception>
         public bool EndWait(IAsyncResult asyncResult)
@@ -1151,11 +1151,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Creates a <see cref="Task{TResult}"/> that's completed exceptionally with the specified exception.</summary>
-        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
         /// <param name="exception">The exception with which to complete the task.</param>
         /// <returns>The faulted task.</returns>
         public static Task FromException(Exception exception)
         {
+            if (exception == null)
+                throw new ArgumentNullException("exception");
+
             return new Task(exception);
         }
 

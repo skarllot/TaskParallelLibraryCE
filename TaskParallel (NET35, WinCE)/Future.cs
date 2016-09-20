@@ -8,7 +8,9 @@
     /// </typeparam>
     public class Task<TResult> : Task
     {
-        TResult _result;
+        private TResult _result;
+
+        #region Property
 
         /// <summary>
         /// Gets the result value of this <see cref="Task{TResult}"/>.
@@ -31,6 +33,8 @@
                 return _result;
             }
         }
+
+        #endregion
 
         #region Constructors
 
@@ -84,6 +88,8 @@
 
         #endregion
 
+        #region Task thread execution
+
         protected override void ExecuteTaskAction()
         {
             if (_action is Func<TResult>)
@@ -111,5 +117,7 @@
                 throw new InvalidOperationException("Unexpected action type");
             }
         }
+
+        #endregion
     }
 }

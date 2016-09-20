@@ -5,14 +5,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TaskParallel (NET35)")]
+[assembly: AssemblyTitle("TaskParallel (NET35)Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TaskParallel (NET35)")]
+[assembly: AssemblyProduct("TaskParallel (NET35)Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("en")]
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d78f0942-7465-44e3-95ec-b60ac01938b8")]
+[assembly: Guid("68e17bc4-a3ef-49cc-989d-6e471b60137e")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -47,13 +47,14 @@ namespace System.Threading
                     var timedOut = now >= currentWait.ExpireAt;
 
                     if (signalReceived)
+                    {
+                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                            new WaitCallbackArgs(currentWait.Callback, currentWait.State, false));
                         timedOut = false;
+                    }
 
                     if (signalReceived || timedOut)
                     {
-                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
-                            new WaitCallbackArgs(currentWait.Callback, currentWait.State, timedOut));
-
                         if (currentWait.ExecuteOnlyOnce)
                             expiredList.Add(i);
                         else
@@ -101,7 +102,7 @@ namespace System.Threading
         /// true to indicate that the thread will no longer wait on the <paramref name="waitObject"/> parameter after the delegate has been called;
         /// false to indicate that the timer is reset every time the wait operation completes until the wait is unregistered.
         /// </param>
-        public static void RegisterWaitForSingleObject(
+        public static RegisteredWaitHandle RegisterWaitForSingleObject(
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             long millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
@@ -110,7 +111,7 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException("millisecondsTimeOutInterval");
             }
 
-            RegisterWaitForSingleObject(waitObject, callBack, state, (int)millisecondsTimeOutInterval, executeOnlyOnce);
+            return RegisterWaitForSingleObject(waitObject, callBack, state, (int)millisecondsTimeOutInterval, executeOnlyOnce);
         }
 
         /// <summary>
@@ -128,10 +129,15 @@ namespace System.Threading
         /// true to indicate that the thread will no longer wait on the <paramref name="waitObject"/> parameter after the delegate has been called;
         /// false to indicate that the timer is reset every time the wait operation completes until the wait is unregistered.
         /// </param>
-        public static void RegisterWaitForSingleObject(
+        /// <exception cref="ArgumentNullException"><paramref name="waitObject"/> or <paramref name="callBack"/> are null.</exception>
+        public static RegisteredWaitHandle RegisterWaitForSingleObject(
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             int millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
+            if (waitObject == null)
+                throw new ArgumentNullException("waitObject");
+            if (callBack == null)
+                throw new ArgumentNullException("callback");
 
             var entry = new WaitEntry(waitObject, callBack, state,
                 millisecondsTimeOutInterval, executeOnlyOnce);
@@ -140,9 +146,57 @@ namespace System.Threading
             _registeredWaits.Add(entry);
             Monitor.Exit(_registeredWaits);
             _addEvent.Set();
+
+            return new RegisteredWaitHandle(waitObject);
         }
 
-        private class WaitEntry
+        /// <summary>
+        /// Represents a handle that has been registered when calling
+        /// <see cref="RegisterWaitForSingleObject(WaitHandle, WaitOrTimerCallback, object, int, bool)"/>.
+        /// This class cannot be inherited.
+        /// </summary>
+        public sealed class RegisteredWaitHandle
+        {
+            private readonly WaitHandle _waitObject;
+
+            internal RegisteredWaitHandle(WaitHandle waitObject)
+            {
+                _waitObject = waitObject;
+            }
+
+            /// <summary>
+            /// Cancels a registered wait operation issued by the
+            /// <see cref="RegisterWaitForSingleObject(WaitHandle, WaitOrTimerCallback, object, int, bool)"/> method.
+            /// </summary>
+            /// <param name="waitObject">The <see cref="WaitHandle"/> to be signaled.</param>
+            /// <returns>true if the function succeeds; otherwise, false.</returns>
+            public bool Unregister(WaitHandle waitObject)
+            {
+                if (waitObject != null)
+                    throw new NotImplementedException("Unregister with WaitHandle is not supported");
+
+                Monitor.Enter(_registeredWaits);
+                try
+                {
+                    for (int i = 0; i < _registeredWaits.Count; i++)
+                    {
+                        if (_registeredWaits[i].WaitObject == _waitObject)
+                        {
+                            _registeredWaits.RemoveAt(i);
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+                finally
+                {
+                    Monitor.Exit(_registeredWaits);
+                }
+            }
+        }
+
+        private sealed class WaitEntry
         {
             public WaitHandle WaitObject { get; set; }
             public WaitOrTimerCallback Callback { get; set; }
