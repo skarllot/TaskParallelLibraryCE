@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TaskParallel (Shim for .NET 3.5 Compact Framework)")]
+[assembly: AssemblyTitle("TaskParallel (NET35 CE)")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -31,8 +31,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("0.1.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
 
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TaskParallel.Tests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TestProject1")]

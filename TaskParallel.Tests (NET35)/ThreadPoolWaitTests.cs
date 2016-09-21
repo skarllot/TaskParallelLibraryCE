@@ -22,7 +22,7 @@ namespace System.Threading.Tests
             };
             ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
             ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
-            if (!doneEventHandle.WaitOne(Timeout * 2))
+            if (!doneEventHandle.WaitOne(Timeout * 2, false))
                 Assert.Fail("Signal was not arrived in a timely manner");
 
             Assert.AreEqual(1, counter);
@@ -44,7 +44,7 @@ namespace System.Threading.Tests
             for (int i = 0; i < ListSize; i++)
             {
                 ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
-                if (!doneEventHandle.WaitOne(Timeout * 2))
+                if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("Signal was not arrived in a timely manner");
 
                 Assert.AreEqual(1 + i, counter);
@@ -63,7 +63,7 @@ namespace System.Threading.Tests
                 doneEventHandle.Set();
             };
             ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
-            if (doneEventHandle.WaitOne(Timeout * 2))
+            if (doneEventHandle.WaitOne(Timeout * 2, false))
                 Assert.Fail("The signal should not be arrived in any way");
 
             Assert.AreEqual(0, counter);
@@ -79,22 +79,23 @@ namespace System.Threading.Tests
             for (int i = 0; i < ListSize; i++)
             {
                 AutoResetEvent current = new AutoResetEvent(false);
+                Assert.IsNotNull(current);
                 eventHandles.Add(current);
                 ThreadPoolWait.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
             }
-
+            
             // Enqueue to another thread to send signals
             ThreadPool.QueueUserWorkItem(state =>
             {
                 foreach (var item in eventHandles)
-                    item.Set();
+                    Assert.IsTrue(item.Set());
             });
-
+            
             // Setup timeout
             var timeoutTask = Tasks.Task.Delay(Timeout);
 
             // Waits for all callbacks until completes or timeout
-            while (!timeoutTask.Wait(0))
+            while (!timeoutTask.Wait(1))
             {
                 if (counter == ListSize)
                     break;
@@ -120,7 +121,7 @@ namespace System.Threading.Tests
             {
                 ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
                 ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
-                if (!doneEventHandle.WaitOne(Timeout * 2))
+                if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("{0}: Signal was not arrived in a timely manner", i);
 
                 Assert.AreEqual(1 + i, counter);
