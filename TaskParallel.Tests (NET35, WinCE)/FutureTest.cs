@@ -172,6 +172,7 @@ namespace TaskParallel.Tests
         ///A test for Wait
         ///</summary>
         [TestMethod()]
+        [TestCategory("Future")]
         public void WaitTest()
         {
             int counter = 0;
@@ -191,8 +192,14 @@ namespace TaskParallel.Tests
         {
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
+#if NETFX_CE
             Task_Accessor<int> target = new Task_Accessor<int>(action);
             target.TaskStartAction(null);
+#else
+            var target = new Task<int>(action);
+            var privateTarget = new PrivateObject(target);
+            privateTarget.Invoke("TaskStartAction", new object[] { null });
+#endif
             Assert.AreEqual(1, counter);
         }
 
@@ -234,9 +241,16 @@ namespace TaskParallel.Tests
         public void EnsureStartOnceTest()
         {
             Func<int> action = () => 1;
+#if NETFX_CE
             Task_Accessor<int> target = new Task_Accessor<int>(action);
             target.EnsureStartOnce();
             target.EnsureStartOnce();
+#else
+            var target = new Task<int>(action);
+            var privateTarget = new PrivateObject(target);
+            privateTarget.Invoke("EnsureStartOnce");
+            privateTarget.Invoke("EnsureStartOnce");
+#endif
         }
 
         /// <summary>

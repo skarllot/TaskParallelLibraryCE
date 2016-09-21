@@ -169,8 +169,14 @@ namespace TaskParallel.Tests
         {
             int counter = 0;
             Action action = () => Interlocked.Increment(ref counter);
+#if NETFX_CE
             Task_Accessor target = new Task_Accessor(action);
             target.TaskStartAction(null);
+#else
+            var target = new Task(action);
+            var privateTarget = new PrivateObject(target);
+            privateTarget.Invoke("TaskStartAction", new object[] { null });
+#endif
             Assert.AreEqual(1, counter);
         }
 
@@ -210,9 +216,16 @@ namespace TaskParallel.Tests
         public void EnsureStartOnceTest()
         {
             Action action = () => { };
+#if NETFX_CE
             Task_Accessor target = new Task_Accessor(action);
             target.EnsureStartOnce();
             target.EnsureStartOnce();
+#else
+            var target = new Task(action);
+            var privateTarget = new PrivateObject(target);
+            privateTarget.Invoke("EnsureStartOnce");
+            privateTarget.Invoke("EnsureStartOnce");
+#endif
         }
 
         /// <summary>
