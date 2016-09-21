@@ -172,7 +172,6 @@ namespace TaskParallel.Tests
         ///A test for Wait
         ///</summary>
         [TestMethod()]
-        [TestCategory("Future")]
         public void WaitTest()
         {
             int counter = 0;
