@@ -7,7 +7,7 @@ The package includes:
 Tested on Windows CE and Pocket PC.
 
 ## Authors
-Fabrício Godoy <skarllot@gmail.com>
+FabrÃ­cio Godoy <skarllot@gmail.com>
 
 ## Dependencies
 * mscorlib
@@ -18,4 +18,4 @@ Fabrício Godoy <skarllot@gmail.com>
 
 Version | Last Updated
 --- | ---
-0.1 | 2016-09-14
+1.0 | 2016-09-21
