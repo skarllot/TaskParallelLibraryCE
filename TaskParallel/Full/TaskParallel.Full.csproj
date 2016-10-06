@@ -17,20 +17,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)\Debug\3.5\</OutputPath>
+    <OutputPath>..\..\Output\Debug\Full\TaskParallel\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Debug\3.5\TaskParallel.XML</DocumentationFile>
+    <DocumentationFile>..\..\Output\Debug\Full\TaskParallel\TaskParallel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)\Release\3.5\</OutputPath>
+    <OutputPath>..\..\Output\Release\Full\TaskParallel\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\Release\3.5\TaskParallel.XML</DocumentationFile>
+    <DocumentationFile>..\..\Output\Release\Full\TaskParallel\TaskParallel.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
