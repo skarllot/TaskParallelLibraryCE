@@ -37,38 +37,38 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\AggregateException.cs">
+    <Compile Include="..\Compact\AggregateException.cs">
       <Link>AggregateException.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\Future.cs">
+    <Compile Include="..\Compact\Future.cs">
       <Link>Future.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.Designer.cs">
+    <Compile Include="..\Compact\Properties\Resources.Designer.cs">
       <Link>Properties\Resources.Designer.cs</Link>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\SpinWait.cs">
+    <Compile Include="..\Compact\SpinWait.cs">
       <Link>SpinWait.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\Task.cs">
+    <Compile Include="..\Compact\Task.cs">
       <Link>Task.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\TaskFactory.cs">
+    <Compile Include="..\Compact\TaskFactory.cs">
       <Link>TaskFactory.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\TaskStatus.cs">
+    <Compile Include="..\Compact\TaskStatus.cs">
       <Link>TaskStatus.cs</Link>
     </Compile>
-    <Compile Include="..\TaskParallel %28NET35, WinCE%29\ThreadPoolWait.cs">
+    <Compile Include="..\Compact\ThreadPoolWait.cs">
       <Link>ThreadPoolWait.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.pt.resx">
+    <EmbeddedResource Include="..\Compact\Properties\Resources.pt.resx">
       <Link>Properties\Resources.pt.resx</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\TaskParallel %28NET35, WinCE%29\Properties\Resources.resx">
+    <EmbeddedResource Include="..\Compact\Properties\Resources.resx">
       <Link>Properties\Resources.resx</Link>
     </EmbeddedResource>
   </ItemGroup>

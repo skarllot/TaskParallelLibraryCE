@@ -52,7 +52,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\TaskParallel.Tests %28NET35%29\ThreadPoolWaitTests.cs">
+    <Compile Include="..\Full\ThreadPoolWaitTests.cs">
       <Link>ThreadPoolWaitTests.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,9 +63,9 @@
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TaskParallel %28NET35, WinCE%29\TaskParallel %28WinCE%29.csproj">
+    <ProjectReference Include="..\..\TaskParallel\Compact\TaskParallel.Compact.csproj">
       <Project>{ED6B187A-B594-43BE-98CB-818A556F12C7}</Project>
-      <Name>TaskParallel %28WinCE%29</Name>
+      <Name>TaskParallel.Compact</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
