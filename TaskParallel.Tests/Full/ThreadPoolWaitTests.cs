@@ -60,13 +60,15 @@ namespace System.Threading.Tests
             WaitOrTimerCallback callback = (state, timedOut) =>
             {
                 Interlocked.Increment(ref counter);
-                doneEventHandle.Set();
+
+                if (!timedOut)
+                    doneEventHandle.Set();
             };
             ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
             if (doneEventHandle.WaitOne(Timeout * 2, false))
                 Assert.Fail("The signal should not be arrived in any way");
 
-            Assert.AreEqual(0, counter);
+            Assert.AreEqual(1, counter, "The callback should be called");
         }
 
         [TestMethod]
@@ -83,14 +85,14 @@ namespace System.Threading.Tests
                 eventHandles.Add(current);
                 ThreadPoolWait.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
             }
-            
+
             // Enqueue to another thread to send signals
             ThreadPool.QueueUserWorkItem(state =>
             {
                 foreach (var item in eventHandles)
                     Assert.IsTrue(item.Set());
             });
-            
+
             // Setup timeout
             var timeoutTask = Tasks.Task.Delay(Timeout);
 

@@ -48,13 +48,14 @@ namespace System.Threading
 
                     if (signalReceived)
                     {
-                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
-                            new WaitCallbackArgs(currentWait.Callback, currentWait.State, false));
                         timedOut = false;
                     }
 
                     if (signalReceived || timedOut)
                     {
+                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                            new WaitCallbackArgs(currentWait.Callback, currentWait.State, timedOut));
+
                         if (currentWait.ExecuteOnlyOnce)
                             expiredList.Add(i);
                         else
