@@ -52,6 +52,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Full\TaskBehavior.cs">
+      <Link>TaskBehavior.cs</Link>
+    </Compile>
     <Compile Include="..\Full\ThreadPoolWaitTests.cs">
       <Link>ThreadPoolWaitTests.cs</Link>
     </Compile>

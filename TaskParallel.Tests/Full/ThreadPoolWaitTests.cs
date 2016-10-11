@@ -59,14 +59,16 @@ namespace System.Threading.Tests
             AutoResetEvent doneEventHandle = new AutoResetEvent(false);
             WaitOrTimerCallback callback = (state, timedOut) =>
             {
-                Interlocked.Increment(ref counter);
+                if (timedOut)
+                    Interlocked.Increment(ref counter);
+                else
+                    Interlocked.Decrement(ref counter);
 
-                if (!timedOut)
-                    doneEventHandle.Set();
+                doneEventHandle.Set();
             };
             ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
-            if (doneEventHandle.WaitOne(Timeout * 2, false))
-                Assert.Fail("The signal should not be arrived in any way");
+            if (!doneEventHandle.WaitOne(Timeout * 4, false))
+                Assert.Fail("Signal was not arrived in a timely manner");
 
             Assert.AreEqual(1, counter, "The callback should be called");
         }
