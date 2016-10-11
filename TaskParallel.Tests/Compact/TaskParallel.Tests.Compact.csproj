@@ -52,15 +52,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Full\TaskBehavior.cs">
-      <Link>TaskBehavior.cs</Link>
-    </Compile>
-    <Compile Include="..\Full\ThreadPoolWaitTests.cs">
-      <Link>ThreadPoolWaitTests.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FutureTest.cs" />
+    <Compile Include="TaskBehavior.cs" />
     <Compile Include="TaskTest.cs" />
+    <Compile Include="ThreadPoolWaitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />

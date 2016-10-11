@@ -54,12 +54,16 @@
     <Compile Include="..\Compact\FutureTest.cs">
       <Link>FutureTest.cs</Link>
     </Compile>
+    <Compile Include="..\Compact\TaskBehavior.cs">
+      <Link>TaskBehavior.cs</Link>
+    </Compile>
     <Compile Include="..\Compact\TaskTest.cs">
       <Link>TaskTest.cs</Link>
     </Compile>
+    <Compile Include="..\Compact\ThreadPoolWaitTests.cs">
+      <Link>ThreadPoolWaitTests.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskBehavior.cs" />
-    <Compile Include="ThreadPoolWaitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\TaskParallel\Full\TaskParallel.Full.csproj">
