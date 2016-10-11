@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>TaskParallelLibraryCE</id>
-    <version>1.1.0.0</version>
+    <version>1.1.0.1</version>
 	<title>Provides a backport of Task&lt;T&gt; for .NET 3.5 Compact Edition</title>
     <authors>Fabrício Godoy</authors>
     <owners>skarllot, fgodoy-verion</owners>
@@ -18,5 +18,11 @@ Tested on Windows CE and Pocket PC.</description>
 		<frameworkAssembly assemblyName="TaskParallel" targetFramework="net35" />
 		<frameworkAssembly assemblyName="TaskParallel" targetFramework="net35-cf" />
 	</frameworkAssemblies>
+	<dependencies>
+		<group targetFramework="net35">
+		</group>
+		<group targetFramework="net35-cf">
+		</group>
+	</dependencies>
   </metadata>
 </package>
