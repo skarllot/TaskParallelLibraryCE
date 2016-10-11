@@ -1318,10 +1318,7 @@ namespace System.Threading.Tasks
 
             // Take a more efficient path if tasks is actually an array
             Task[] taskArray = tasks as Task[];
-            if (taskArray != null)
-                return WhenAll(taskArray);
-            else
-                return WhenAll(tasks.ToArray());
+            return WhenAll(taskArray ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1386,10 +1383,7 @@ namespace System.Threading.Tasks
 
             // Take a more efficient path if tasks is actually an array
             Task<TResult>[] taskArray = tasks as Task<TResult>[];
-            if (taskArray != null)
-                return WhenAll(taskArray);
-            else
-                return WhenAll(tasks.ToArray());
+            return WhenAll(taskArray ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1439,6 +1433,148 @@ namespace System.Threading.Tasks
                     throw new AggregateException(exceptions.ToArray());
 
                 return results.ToArray();
+            });
+            resultTask.Start();
+            return resultTask;
+        }
+
+        #endregion
+
+        #region WhenAny
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task> WhenAny(IEnumerable<Task> tasks)
+        {
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
+
+            // Take a more efficient path if tasks is actually an array
+            Task[] taskArray = tasks as Task[];
+            return WhenAny(taskArray ?? tasks.ToArray());
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> array contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task> WhenAny(params Task[] tasks)
+        {
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
+            if (tasks.Length == 0)
+                throw new ArgumentException("At least one task is required to wait for completion");
+
+            foreach (var task in tasks)
+            {
+                if (task == null)
+                    throw new ArgumentException("One task from provided task array is null");
+            }
+
+            var resultTask = new Task<Task>(() =>
+            {
+                while (true)
+                {
+                    foreach (var task in tasks)
+                    {
+                        try
+                        {
+                            if (task.Wait(0))
+                                return task;
+                        }
+                        catch (Exception)
+                        {
+                            return task;
+                        }
+                    }
+
+                    Thread.Sleep(1);
+                }
+            });
+            resultTask.Start();
+            return resultTask;
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> collection contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
+        {
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
+
+            // Take a more efficient path if tasks is actually an array
+            Task<TResult>[] taskArray = tasks as Task<TResult>[];
+            return WhenAny(taskArray ?? tasks.ToArray());
+        }
+
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="tasks"/> argument was null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="tasks"/> array contained a null task, or was empty.
+        /// </exception>
+        public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
+        {
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
+            if (tasks.Length == 0)
+                throw new ArgumentException("At least one task is required to wait for completion");
+
+            foreach (var task in tasks)
+            {
+                if (task == null)
+                    throw new ArgumentException("One task from provided task array is null");
+            }
+
+            var resultTask = new Task<Task<TResult>>(() =>
+            {
+                while (true)
+                {
+                    foreach (var task in tasks)
+                    {
+                        try
+                        {
+                            if (task.Wait(0))
+                                return task;
+                        }
+                        catch (Exception)
+                        {
+                            return task;
+                        }
+                    }
+
+                    Thread.Sleep(1);
+                }
             });
             resultTask.Start();
             return resultTask;

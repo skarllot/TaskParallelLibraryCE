@@ -59,14 +59,13 @@ namespace System.Tests
         [TestMethod]
         public void TaskAwaitCreatedTest()
         {
-            //int counter = 0;
-            //var task = new Task(() => Interlocked.Increment(ref counter));
-            //if (await Task.WhenAny(task, Task.Delay(Timeout)) == task)
-            //    Assert.Fail("Awaiting for task should not start it");
+            int counter = 0;
+            var task = new Task(() => Interlocked.Increment(ref counter));
+            if (Task.WhenAny(task, Task.Delay(Timeout)).Result == task)
+                Assert.Fail("Awaiting for task should not start it");
 
-            //Assert.AreEqual(0, counter);
-            //Assert.AreEqual(TaskStatus.Created, task.Status);
-            Assert.Inconclusive("Test not implemented");
+            Assert.AreEqual(0, counter);
+            Assert.AreEqual(TaskStatus.Created, task.Status);
         }
 
         [TestMethod]
@@ -109,6 +108,28 @@ namespace System.Tests
         {
             var task = new Task(() => { });
             Assert.IsFalse(task.ContinueWith(t => { }).Wait(Timeout));
+        }
+
+        [TestMethod]
+        [Timeout(Timeout)]
+        public void TaskWhenAllTest()
+        {
+            int counter = 0;
+            var whenAll = Task.WhenAll(
+                Task.Run(() =>
+                {
+                    Thread.Sleep(10);
+                    Interlocked.Increment(ref counter);
+                }),
+                Task.Run(() =>
+                {
+                    Thread.Sleep(8);
+                    Interlocked.Increment(ref counter);
+                    Interlocked.Increment(ref counter);
+                }));
+
+            whenAll.Wait();
+            Assert.AreEqual(3, counter);
         }
     }
 }
