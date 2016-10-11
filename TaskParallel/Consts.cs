@@ -5,7 +5,7 @@ internal static class Consts
     public const string Product = "TaskParallelCE";
     public const string Copyright = "Copyright © Fabrício Godoy 2016";
     public const bool ComVisible = false;
-    public const string Version = "1.0.1";
+    public const string Version = "1.1.0.0";
 
 #if WindowsCE
     public const string Title = "TaskParallel (Compact Edition)";
