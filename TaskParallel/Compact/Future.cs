@@ -1,4 +1,5 @@
-﻿namespace System.Threading.Tasks
+﻿#if !NET40
+namespace System.Threading.Tasks
 {
     /// <summary>
     /// Represents an asynchronous operation that produces a result at some time in the future.
@@ -90,6 +91,9 @@
 
         #region Task thread execution
 
+        /// <summary>
+        /// Unbox task action and execute it.
+        /// </summary>
         protected override void ExecuteTaskAction()
         {
             if (_action is Func<TResult>)
@@ -121,3 +125,4 @@
         #endregion
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿namespace System.Threading.Tasks
+﻿#if !NET40
+namespace System.Threading.Tasks
 {
     /// <summary>
     /// Represents the current stage in the lifecycle of a <see cref="Task"/>.
@@ -46,3 +47,4 @@
         Faulted
     }
 }
+#endif

@@ -1,7 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Threading;
 
-namespace System.Threading.Tests
+namespace System.Compatibility.Tests
 {
     [TestClass]
     public class ThreadPoolWaitTests
@@ -20,8 +21,8 @@ namespace System.Threading.Tests
                 Interlocked.Increment(ref counter);
                 doneEventHandle.Set();
             };
-            ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
-            ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
+            ThreadPool.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+            Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
             if (!doneEventHandle.WaitOne(Timeout * 2, false))
                 Assert.Fail("Signal was not arrived in a timely manner");
 
@@ -39,11 +40,11 @@ namespace System.Threading.Tests
                 Interlocked.Increment(ref counter);
                 doneEventHandle.Set();
             };
-            ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, false);
+            ThreadPool.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, false);
 
             for (int i = 0; i < ListSize; i++)
             {
-                ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
+                Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
                 if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("Signal was not arrived in a timely manner");
 
@@ -66,7 +67,7 @@ namespace System.Threading.Tests
 
                 doneEventHandle.Set();
             };
-            ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+            ThreadPool.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
             if (!doneEventHandle.WaitOne(Timeout * 4, false))
                 Assert.Fail("Signal was not arrived in a timely manner");
 
@@ -85,18 +86,18 @@ namespace System.Threading.Tests
                 AutoResetEvent current = new AutoResetEvent(false);
                 Assert.IsNotNull(current);
                 eventHandles.Add(current);
-                ThreadPoolWait.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
+                ThreadPool.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
             }
 
             // Enqueue to another thread to send signals
-            ThreadPool.QueueUserWorkItem(state =>
+            Threading.ThreadPool.QueueUserWorkItem(state =>
             {
                 foreach (var item in eventHandles)
                     Assert.IsTrue(item.Set());
             });
 
             // Setup timeout
-            var timeoutTask = Tasks.Task.Delay(Timeout);
+            var timeoutTask = Threading.Tasks.Task.Delay(Timeout);
 
             // Waits for all callbacks until completes or timeout
             while (!timeoutTask.Wait(1))
@@ -123,8 +124,8 @@ namespace System.Threading.Tests
 
             for (int i = 0; i < ListSize; i++)
             {
-                ThreadPoolWait.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
-                ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
+                ThreadPool.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+                Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
                 if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("{0}: Signal was not arrived in a timely manner", i);
 

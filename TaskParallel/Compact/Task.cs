@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !NET40
+using System.Collections.Generic;
 using System.Linq;
 
 namespace System.Threading.Tasks
@@ -12,18 +13,34 @@ namespace System.Threading.Tasks
         private static readonly TaskFactory _defaultFactory = new TaskFactory();
         private static int _taskIdCounter;  // static counter used to generate unique task IDs
 
-        // The body of the task.  Might be Action<object>, Action<TState> or Action.  Or possibly a Func.
+        /// <summary>
+        /// The body of the task. Might be <see cref="Action"/>,
+        /// <see cref="Action{T}"/>, <see cref="Func{TResult}"/> or
+        /// <see cref="Func{T, TResult}"/>.
+        /// </summary>
         protected readonly Delegate _action;
-        // A state object that can be optionally supplied, passed to action.
+        /// <summary>
+        /// A state object that can be optionally supplied, passed to action.
+        /// </summary>
         protected readonly object _stateObject;
 
+
+        /// <summary>
+        /// A set of exceptions occurred when trying to execute current task.
+        /// </summary>
         protected readonly List<System.Exception> _exceptions = new List<System.Exception>();
+        /// <summary>
+        /// A thread-safe event which notifies that current task is completed its execution.
+        /// </summary>
         protected readonly ManualResetEvent _taskCompletedEvent;
-        protected bool _runSync;
+        private bool _runSync;
         // this task's unique ID. initialized only if it is ever requested
         private int _taskId;
 
-        // The source which current task continues
+
+        /// <summary>
+        /// The source which current task continues
+        /// </summary>
         protected readonly Task _continueSource;
 
 
@@ -242,7 +259,9 @@ namespace System.Threading.Tasks
         {
         }
 
-        // Destructor to enforces disposal. 
+        /// <summary>
+        /// Destructor to enforces disposal of unmanaged resources.
+        /// </summary>
         ~Task()
         {
             Dispose(false);
@@ -288,7 +307,9 @@ namespace System.Threading.Tasks
             return newId;
         }
 
-        // Throws an exception when called more than once
+        /// <summary>
+        /// Throws an exception when called more than once.
+        /// </summary>
         protected void EnsureStartOnce()
         {
             if (!MarkStarted())
@@ -342,7 +363,7 @@ namespace System.Threading.Tasks
             else
             {
                 WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
-                ThreadPoolWait.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
+                Compatibility.ThreadPool.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
             }
         }
 
@@ -350,7 +371,10 @@ namespace System.Threading.Tasks
 
         #region Task thread execution
 
-        // Current execution of the task.
+        /// <summary>
+        /// Executes the action designed for current task.
+        /// </summary>
+        /// <param name="stateObject">Ignored.</param>
         protected void TaskStartAction(object stateObject)
         {
             try
@@ -377,7 +401,9 @@ namespace System.Threading.Tasks
             }
         }
 
-        // Unbox task action and execute it.
+        /// <summary>
+        /// Unbox task action and execute it.
+        /// </summary>
         protected virtual void ExecuteTaskAction()
         {
             if (_action is Action)
@@ -532,7 +558,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
+            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
             return ar;
         }
 
@@ -566,7 +592,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
+            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
             return ar;
         }
 
@@ -599,7 +625,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            ThreadPoolWait.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
+            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
             return ar;
         }
 
@@ -825,7 +851,7 @@ namespace System.Threading.Tasks
             return InternalContinueWith(continuationAction, state);
         }
 
-        public Task<TResult> InternalContinueWith<TResult>(Delegate continuationFunction, object state)
+        private Task<TResult> InternalContinueWith<TResult>(Delegate continuationFunction, object state)
         {
             // Throw on continuation with null action
             if (continuationFunction == null)
@@ -1291,7 +1317,7 @@ namespace System.Threading.Tasks
                 task._taskCompletedEvent.Set();
             };
             var timeoutEvent = new ManualResetEvent(false);
-            ThreadPoolWait.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
+            Compatibility.ThreadPool.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
 
             return task;
         }
@@ -1583,3 +1609,4 @@ namespace System.Threading.Tasks
         #endregion
     }
 }
+#endif

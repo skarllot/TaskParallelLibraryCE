@@ -1,4 +1,5 @@
-﻿namespace System.Threading.Tasks
+﻿#if !NET40
+namespace System.Threading.Tasks
 {
     /// <summary>
     /// Provides support for creating and scheduling <see cref="Task"/> objects.
@@ -89,3 +90,4 @@
         }
     }
 }
+#endif

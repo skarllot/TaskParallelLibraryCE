@@ -1,4 +1,5 @@
-﻿using System.Security.Permissions;
+﻿#if !NET40
+using System.Security.Permissions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Threading
@@ -53,7 +54,7 @@ namespace System.Threading
     /// threads must spin, each should use its own instance of SpinWait.
     /// </para>
     /// </remarks>
-#if !NETFX_CE
+#if !WindowsCE
     [HostProtection(Synchronization = true, ExternalThreading = true)]
 #endif
     public struct SpinWait
@@ -133,7 +134,7 @@ namespace System.Threading
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
-#if NETFX_CE
+#if WindowsCE || DEBUG
                     Thread.Sleep(0);
 #else
                     Thread.SpinWait(4 << YIELD_THRESHOLD);
@@ -153,7 +154,7 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
-#if NETFX_CE
+#if WindowsCE || DEBUG
                 Thread.Sleep(0);
 #else
                 Thread.SpinWait(4 << m_count);
@@ -271,7 +272,7 @@ namespace System.Threading
     /// </summary>
     internal static class PlatformHelper
     {
-#if !NETFX_CE
+#if !WindowsCE
         private const int PROCESSOR_COUNT_REFRESH_INTERVAL_MS = 30000; // How often to refresh the count, in milliseconds.
         private static volatile int s_processorCount; // The last count seen.
         private static volatile int s_lastProcessorCountRefreshTicks; // The last time we refreshed.
@@ -285,7 +286,7 @@ namespace System.Threading
         {
             get
             {
-#if NETFX_CE
+#if WindowsCE || DEBUG
                 return 1;
 #else
                 int now = Environment.TickCount;
@@ -354,3 +355,4 @@ namespace System.Threading
     }
 
 }
+#endif

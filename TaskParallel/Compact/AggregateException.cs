@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !NET40
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,7 +15,7 @@ namespace System
     /// exception object.
     /// </remarks>
     [Serializable]
-#if !NETFX_CE
+#if !WindowsCE
     [DebuggerDisplay("Count = {InnerExceptionCount}")]
 #endif
     public class AggregateException : Exception
@@ -156,7 +157,7 @@ namespace System
             m_innerExceptions = new ReadOnlyCollection<Exception>(exceptionsCopy);
         }
 
-#if !NETFX_CE
+#if !WindowsCE
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateException"/> class with serialized data.
         /// </summary>
@@ -380,3 +381,4 @@ namespace System
     }
 
 }
+#endif

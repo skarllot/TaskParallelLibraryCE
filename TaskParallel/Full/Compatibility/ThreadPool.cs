@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading;
 
-namespace System.Threading
+#if WindowsCE || DEBUG
+using System.Collections.Generic;
+#endif
+
+namespace System.Compatibility
 {
-#if NETFX_CE
+#if WindowsCE
     /// <summary>
     /// Represents a method to be called when a <see cref="WaitHandle"/> is signaled or times out.
     /// </summary>
@@ -18,13 +22,14 @@ namespace System.Threading
     /// <summary>
     /// Provides a thread that can be used to wait on behalf of other threads, and process timers.
     /// </summary>
-    public static class ThreadPoolWait
+    public static class ThreadPool
     {
+#if WindowsCE || DEBUG
         static readonly Thread _thread;
         static readonly List<WaitEntry> _registeredWaits = new List<WaitEntry>();
         static readonly ManualResetEvent _addEvent = new ManualResetEvent(true);
 
-        static ThreadPoolWait()
+        static ThreadPool()
         {
             _thread = new Thread(WaitsHandler);
             _thread.IsBackground = true;
@@ -53,7 +58,7 @@ namespace System.Threading
 
                     if (signalReceived || timedOut)
                     {
-                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                        Threading.ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
                             new WaitCallbackArgs(currentWait.Callback, currentWait.State, timedOut));
 
                         if (currentWait.ExecuteOnlyOnce)
@@ -87,6 +92,7 @@ namespace System.Threading
             WaitCallbackArgs waitEntry = (WaitCallbackArgs)stateObject;
             waitEntry.Callback(waitEntry.State, waitEntry.TimedOut);
         }
+#endif
 
         /// <summary>
         /// Registers a delegate to wait for a WaitHandle, specifying a 32-bit
@@ -107,12 +113,17 @@ namespace System.Threading
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             long millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
+#if WindowsCE || DEBUG
             if (millisecondsTimeOutInterval < -1 || millisecondsTimeOutInterval > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeOutInterval");
             }
 
             return RegisterWaitForSingleObject(waitObject, callBack, state, (int)millisecondsTimeOutInterval, executeOnlyOnce);
+#else
+            return Threading.ThreadPool.RegisterWaitForSingleObject(
+                waitObject, callBack, state, millisecondsTimeOutInterval, executeOnlyOnce);
+#endif
         }
 
         /// <summary>
@@ -135,6 +146,7 @@ namespace System.Threading
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             int millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
+#if WindowsCE || DEBUG
             if (waitObject == null)
                 throw new ArgumentNullException("waitObject");
             if (callBack == null)
@@ -149,8 +161,13 @@ namespace System.Threading
             _addEvent.Set();
 
             return new RegisteredWaitHandle(waitObject);
+#else
+            return Threading.ThreadPool.RegisterWaitForSingleObject(
+                waitObject, callBack, state, millisecondsTimeOutInterval, executeOnlyOnce);
+#endif
         }
 
+#if WindowsCE || DEBUG
         /// <summary>
         /// Represents a handle that has been registered when calling
         /// <see cref="RegisterWaitForSingleObject(WaitHandle, WaitOrTimerCallback, object, int, bool)"/>.
@@ -251,5 +268,6 @@ namespace System.Threading
                 TimedOut = timedOut;
             }
         }
+#endif
     }
 }
