@@ -46,6 +46,15 @@
     <Compile Include="..\Compact\AggregateException.cs">
       <Link>AggregateException.cs</Link>
     </Compile>
+    <Compile Include="..\Compact\Compatibility\TaskEx.cs">
+      <Link>Compatibility\TaskEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\ThreadPoolWaiter.cs">
+      <Link>Compatibility\ThreadPoolWaiter.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\WaitHandleEx.cs">
+      <Link>Compatibility\WaitHandleEx.cs</Link>
+    </Compile>
     <Compile Include="..\Compact\Future.cs">
       <Link>Future.cs</Link>
     </Compile>
@@ -71,9 +80,6 @@
     <Compile Include="..\Consts.cs">
       <Link>Consts.cs</Link>
     </Compile>
-    <Compile Include="Compatibility\TaskEx.cs" />
-    <Compile Include="Compatibility\ThreadPoolWaiter.cs" />
-    <Compile Include="Compatibility\WaitHandleEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Compact\Properties\Resources.pt.resx">

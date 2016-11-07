@@ -100,6 +100,15 @@
     <Compile Include="..\Compact\AggregateException.cs">
       <Link>AggregateException.cs</Link>
     </Compile>
+    <Compile Include="..\Compact\Compatibility\TaskEx.cs">
+      <Link>Compatibility\TaskEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\ThreadPoolWaiter.cs">
+      <Link>Compatibility\ThreadPoolWaiter.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\WaitHandleEx.cs">
+      <Link>Compatibility\WaitHandleEx.cs</Link>
+    </Compile>
     <Compile Include="..\Compact\Future.cs">
       <Link>Future.cs</Link>
     </Compile>
@@ -121,20 +130,11 @@
     <Compile Include="..\Consts.cs">
       <Link>Consts.cs</Link>
     </Compile>
-    <Compile Include="..\Full\Compatibility\TaskEx.cs">
-      <Link>Compatibility\TaskEx.cs</Link>
-    </Compile>
-    <Compile Include="..\Full\Compatibility\ThreadPoolWaiter.cs">
-      <Link>Compatibility\ThreadPoolWaiter.cs</Link>
-    </Compile>
-    <Compile Include="..\Full\Compatibility\WaitHandleEx.cs">
-      <Link>Compatibility\WaitHandleEx.cs</Link>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="d78f0942-7465-44e3-95ec-b60ac01938b8" />
+      <UserProperties ProjectLinkReference="d78f0942-7465-44e3-95ec-b60ac01938b8" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
