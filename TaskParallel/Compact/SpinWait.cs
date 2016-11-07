@@ -172,7 +172,7 @@ namespace System.Threading
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
-#if (WindowsCE || DEBUG) && !(!NET45 && PCL)
+#if WindowsCE && !(!NET45 && PCL)
                     Thread.Sleep(0);
 #elif (!NET45 && PCL)
                     _sleep.WaitOne(0);
@@ -194,7 +194,7 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
-#if (WindowsCE || DEBUG) && !(!NET45 && PCL)
+#if WindowsCE && !(!NET45 && PCL)
                 Thread.Sleep(0);
 #elif (!NET45 && PCL)
                 _sleep.WaitOne(0);
@@ -328,7 +328,7 @@ namespace System.Threading
         {
             get
             {
-#if WindowsCE || DEBUG
+#if WindowsCE
                 return 1;
 #else
                 int now = Environment.TickCount;

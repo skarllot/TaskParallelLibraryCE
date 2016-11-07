@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-#if !PCL && (WindowsCE || DEBUG)
+#if !PCL && WindowsCE
 using System.Collections.Generic;
 #elif PCL
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace System.Compatibility
     /// </summary>
     public static class ThreadPoolWaiter
     {
-#if !PCL && (WindowsCE || DEBUG)
+#if !PCL && WindowsCE
         static readonly Thread _thread;
         static readonly List<WaitEntry> _registeredWaits = new List<WaitEntry>();
         static readonly ManualResetEvent _addEvent = new ManualResetEvent(true);
@@ -115,7 +115,7 @@ namespace System.Compatibility
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             long millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
-#if WindowsCE || PCL || DEBUG
+#if WindowsCE || PCL
             if (millisecondsTimeOutInterval < -1 || millisecondsTimeOutInterval > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeOutInterval");
@@ -148,7 +148,7 @@ namespace System.Compatibility
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             int millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
-#if WindowsCE || PCL || DEBUG
+#if WindowsCE || PCL
             if (waitObject == null)
                 throw new ArgumentNullException("waitObject");
             if (callBack == null)
@@ -191,7 +191,7 @@ namespace System.Compatibility
 #endif
         }
 
-#if WindowsCE || PCL || DEBUG
+#if WindowsCE || PCL
         /// <summary>
         /// Represents a handle that has been registered when calling
         /// <see cref="RegisterWaitForSingleObject(WaitHandle, WaitOrTimerCallback, object, int, bool)"/>.
@@ -252,7 +252,7 @@ namespace System.Compatibility
         }
 #endif
 
-#if !PCL && (WindowsCE || DEBUG)
+#if !PCL && WindowsCE
         private sealed class WaitEntry
         {
             public WaitHandle WaitObject { get; set; }
