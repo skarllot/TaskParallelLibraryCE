@@ -8,7 +8,7 @@ namespace System.Compatibility.Tests
     public class ThreadPoolWaitTests
     {
         const int Timeout = 150;
-        const int ListSize = 1000;
+        const int ListSize = 25;
 
         [TestMethod]
         public void RegisterWaitForSingleObjectOnceTest()

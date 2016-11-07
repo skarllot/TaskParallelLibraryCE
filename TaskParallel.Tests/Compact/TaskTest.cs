@@ -12,7 +12,7 @@ namespace TaskParallel.Tests
     [TestClass()]
     public class TaskTest
     {
-        public const int NESTING_COUNT = 1000;
+        public const int NestingCount = 25;
 
         /// <summary>
         ///A test for IsFaulted
@@ -359,14 +359,14 @@ namespace TaskParallel.Tests
             task.Start();
 
             Action<Task> continueAction = t => Interlocked.Increment(ref counter);
-            for (int i = 0; i < NESTING_COUNT; i++)
+            for (int i = 0; i < NestingCount; i++)
             {
                 task = task.ContinueWith(continueAction);
             }
 
             Assert.IsNotNull(task);
             task.Wait();
-            Assert.AreEqual(NESTING_COUNT + 1, counter);
+            Assert.AreEqual(NestingCount + 1, counter);
             Assert.IsNull(task.Exception);
         }
     }

@@ -384,14 +384,14 @@ namespace TaskParallel.Tests
             task.Start();
 
             Func<Task, int> continueFunction = t => Interlocked.Increment(ref counter);
-            for (int i = 0; i < TaskTest.NESTING_COUNT; i++)
+            for (int i = 0; i < TaskTest.NestingCount; i++)
             {
                 task = task.ContinueWith(continueFunction);
             }
 
             Assert.IsNotNull(task);
             task.Wait();
-            Assert.AreEqual(TaskTest.NESTING_COUNT + 1, counter);
+            Assert.AreEqual(TaskTest.NestingCount + 1, counter);
             Assert.IsNull(task.Exception);
         }
     }
