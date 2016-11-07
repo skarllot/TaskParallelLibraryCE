@@ -72,7 +72,7 @@ namespace System.Compatibility
         /// </summary>
         /// <typeparam name="TResult">The result type of the task.</typeparam>
         /// <param name="function">The work to execute asynchronously.</param>
-        /// <returns>A <see cref="Task{TResult}"/> that represents the work queued to execute in the <see cref="ThreadPoolWaiter"/>.</returns>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the work queued to execute in the <see cref="ThreadPool"/>.</returns>
         public static Task<TResult> Run<TResult>(Func<TResult> function)
         {
 #if !NET45 && NET40

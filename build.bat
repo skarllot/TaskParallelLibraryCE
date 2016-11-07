@@ -18,6 +18,7 @@ echo building all projects in the solution (Release)
 rmdir /s/q "%SolutionDir%Output" 2> nul
 mkdir "%SolutionDir%Output"
 
+CALL :Build TaskParallel_Full WINCE v3.5 Client net35-cf-test "TRACE;WindowsCE"
 CALL :Build TaskParallel_Full Release v3.5 Client net35 "TRACE;NET35"
 CALL :Build TaskParallel_Full Release v4.0 "" net40 "TRACE;NET35;NET40"
 CALL :Build TaskParallel_Full Release v4.5 "" net45 "TRACE;NET35;NET40;NET45"

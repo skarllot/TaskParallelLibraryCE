@@ -363,7 +363,7 @@ namespace System.Threading.Tasks
             else
             {
                 WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
-                Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
+                Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
             }
         }
 
@@ -558,7 +558,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
+            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
             return ar;
         }
 
@@ -592,7 +592,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
+            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
             return ar;
         }
 
@@ -625,7 +625,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
+            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
             return ar;
         }
 
@@ -1319,7 +1319,7 @@ namespace System.Threading.Tasks
                 timeoutEvent.Close();
                 timeoutEvent = null;
             };
-            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
+            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
 
             return task;
         }

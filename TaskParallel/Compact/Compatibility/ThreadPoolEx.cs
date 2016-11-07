@@ -1,37 +1,28 @@
 ﻿using System.Threading;
 
-#if !PCL && WindowsCE
+#if WindowsCE
 using System.Collections.Generic;
+using System.Linq;
 #elif PCL
 using System.Threading.Tasks;
 #endif
 
 namespace System.Compatibility
 {
-#if WindowsCE || PCL
-    /// <summary>
-    /// Represents a method to be called when a <see cref="WaitHandle"/> is signaled or times out.
-    /// </summary>
-    /// <param name="state">
-    /// An object containing information to be used by the callback method each time it executes.
-    /// </param>
-    /// <param name="timedOut">
-    /// true if the System.Threading.WaitHandle timed out; false if it was signaled.
-    /// </param>
-    public delegate void WaitOrTimerCallback(object state, bool timedOut);
-#endif
-
     /// <summary>
     /// Provides a thread that can be used to wait on behalf of other threads, and process timers.
     /// </summary>
-    public static class ThreadPoolWaiter
+    public static class ThreadPoolEx
     {
-#if !PCL && WindowsCE
+#if WindowsCE
         static readonly Thread _thread;
-        static readonly List<WaitEntry> _registeredWaits = new List<WaitEntry>();
-        static readonly ManualResetEvent _addEvent = new ManualResetEvent(true);
+        static readonly ManualResetEvent _startEvent = new ManualResetEvent(false);
+        static readonly AutoResetEvent _addEvent = new AutoResetEvent(false);
+        static readonly AutoResetEvent _unregisterEvent = new AutoResetEvent(false);
+        static volatile WaitEntry _addQueue = null;
+        static volatile int _unregisterQueue = -1;
 
-        static ThreadPoolWaiter()
+        static ThreadPoolEx()
         {
             _thread = new Thread(WaitsHandler);
             _thread.IsBackground = true;
@@ -41,48 +32,76 @@ namespace System.Compatibility
 
         private static void WaitsHandler()
         {
-            var expiredList = new List<int>();
+            List<WaitEntry> registeredWaits = new List<WaitEntry>();
 
             while (true)
             {
-                Monitor.Enter(_registeredWaits);
-                var now = DateTime.Now;
-                for (int i = 0; i < _registeredWaits.Count; i++)
+                int closestTimeout = Timeout.Infinite;
+
+                if (registeredWaits.Count > 0)
+                    registeredWaits.Min(w => w.RemainingTime);
+
+                WaitHandle[] waitEntries = new WaitHandle[registeredWaits.Count + 2];
+                waitEntries[0] = _addEvent;
+                waitEntries[1] = _unregisterEvent;
+
+                if (waitEntries.Length > 2)
                 {
-                    var currentWait = _registeredWaits[i];
-                    var signalReceived = currentWait.WaitObject.WaitOne(0, false);
-                    var timedOut = now >= currentWait.ExpireAt;
-
-                    if (signalReceived)
-                    {
-                        timedOut = false;
-                    }
-
-                    if (signalReceived || timedOut)
-                    {
-                        Threading.ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
-                            new WaitCallbackArgs(currentWait.Callback, currentWait.State, timedOut));
-
-                        if (currentWait.ExecuteOnlyOnce)
-                            expiredList.Add(i);
-                        else
-                            currentWait.Reset();
-                    }
+                    for (int i = 2; i < waitEntries.Length; i++)
+                        waitEntries[i] = registeredWaits[i - 2].WaitObject;
                 }
 
-                for (int i = expiredList.Count - 1; i >= 0; i--)
-                    _registeredWaits.RemoveAt(expiredList[i]);
+                _startEvent.Set();
+                int signalIndex = WaitHandleEx.WaitAny(waitEntries, closestTimeout);
+                if (signalIndex > 1)
+                {
+                    WaitEntry signedEntry = registeredWaits[signalIndex - 2];
+                    int remaintingTime = signedEntry.RemainingTime;
+                    ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                        new WaitCallbackArgs(signedEntry.Callback, signedEntry.State, remaintingTime <= 0));
 
-                if (_registeredWaits.Count == 0)
-                    _addEvent.Reset();
-
-                expiredList.Clear();
-                Monitor.Exit(_registeredWaits);
-
-                if (!_addEvent.WaitOne(0, false))
-                    _addEvent.WaitOne();
-                else
+                    if (signedEntry.ExecuteOnlyOnce)
+                        registeredWaits.RemoveAt(signalIndex - 2);
+                    else
+                        signedEntry.Reset();
+                }
+                else if (signalIndex == 0)
+                {
+                    registeredWaits.Add(_addQueue);
+                    _addQueue = null;
+                    _addEvent.Set();
                     Thread.Sleep(1);
+                }
+                else if (signalIndex == 1)
+                {
+                    for (int i = 0; i < registeredWaits.Count; i++)
+                    {
+                        if (registeredWaits[i].Id == _unregisterQueue)
+                        {
+                            registeredWaits.RemoveAt(i);
+                            break;
+                        }
+                    }
+
+                    _unregisterQueue = -1;
+                    _unregisterEvent.Set();
+                    Thread.Sleep(1);
+                }
+
+                for (int i = registeredWaits.Count - 1; i >= 0; i--)
+                {
+                    WaitEntry current = registeredWaits[i];
+                    if (current.RemainingTime <= 0)
+                    {
+                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                            new WaitCallbackArgs(current.Callback, current.State, true));
+
+                        if (current.ExecuteOnlyOnce)
+                            registeredWaits.RemoveAt(i);
+                        else
+                            current.Reset();
+                    }
+                }
             }
         }
 
@@ -153,18 +172,24 @@ namespace System.Compatibility
                 throw new ArgumentNullException("waitObject");
             if (callBack == null)
                 throw new ArgumentNullException("callback");
+#endif
 
-#if !PCL
+#if WindowsCE
             var entry = new WaitEntry(waitObject, callBack, state,
                 millisecondsTimeOutInterval, executeOnlyOnce);
 
-            Monitor.Enter(_registeredWaits);
-            _registeredWaits.Add(entry);
-            Monitor.Exit(_registeredWaits);
-            _addEvent.Set();
+            _startEvent.WaitOne();
 
-            return new RegisteredWaitHandle(waitObject);
-#else
+            lock (_thread)
+            {
+                _addQueue = entry;
+                _addEvent.Set();
+                Thread.Sleep(1);
+                _addEvent.WaitOne();
+            }
+
+            return new RegisteredWaitHandle(entry.Id);
+#elif PCL
             ManualResetEvent unregisterEvent = new ManualResetEvent(false);
             Action internalCallback = () =>
             {
@@ -184,9 +209,8 @@ namespace System.Compatibility
             };
             TaskEx.Run(internalCallback);
             return new RegisteredWaitHandle(unregisterEvent);
-#endif
 #else
-            return Threading.ThreadPool.RegisterWaitForSingleObject(
+            return ThreadPool.RegisterWaitForSingleObject(
                 waitObject, callBack, state, millisecondsTimeOutInterval, executeOnlyOnce);
 #endif
         }
@@ -199,12 +223,12 @@ namespace System.Compatibility
         /// </summary>
         public sealed class RegisteredWaitHandle
         {
-#if !PCL
-            private readonly WaitHandle _waitObject;
+#if WindowsCE
+            private readonly int _waitId;
 
-            internal RegisteredWaitHandle(WaitHandle waitObject)
+            internal RegisteredWaitHandle(int waitId)
             {
-                _waitObject = waitObject;
+                _waitId = waitId;
             }
 #else
             private readonly ManualResetEvent _unregisterEvent;
@@ -226,25 +250,17 @@ namespace System.Compatibility
                 if (waitObject != null)
                     throw new NotImplementedException("Unregister with WaitHandle is not supported");
 
-#if !PCL
-                Monitor.Enter(_registeredWaits);
-                try
-                {
-                    for (int i = 0; i < _registeredWaits.Count; i++)
-                    {
-                        if (_registeredWaits[i].WaitObject == _waitObject)
-                        {
-                            _registeredWaits.RemoveAt(i);
-                            return true;
-                        }
-                    }
+#if WindowsCE
+                _startEvent.WaitOne();
 
-                    return false;
-                }
-                finally
+                lock (_thread)
                 {
-                    Monitor.Exit(_registeredWaits);
+                    _unregisterQueue = _waitId;
+                    _unregisterEvent.Set();
+                    _unregisterEvent.WaitOne();
                 }
+
+                return _unregisterQueue != _waitId;
 #else
                 return _unregisterEvent.Set();
 #endif
@@ -252,44 +268,59 @@ namespace System.Compatibility
         }
 #endif
 
-#if !PCL && WindowsCE
-        private sealed class WaitEntry
+#if WindowsCE
+        internal sealed class WaitEntry : IDisposable
         {
+            private static int _idCounter = 0;
+            private readonly Diagnostics.Stopwatch _timeTracker;
+            private readonly int _id;
+
             public WaitHandle WaitObject { get; set; }
             public WaitOrTimerCallback Callback { get; set; }
             public object State { get; set; }
             public int Timeout { get; set; }
             public bool ExecuteOnlyOnce { get; set; }
-            public DateTime ExpireAt { get; set; }
+
+            public int Id
+            {
+                get { return _id; }
+            }
+
+            public int RemainingTime
+            {
+                get
+                {
+                    if (Timeout == -1)
+                        return int.MaxValue;
+                    else if (Timeout == 0)
+                        return 0;
+
+                    return Timeout - (int)_timeTracker.ElapsedMilliseconds;
+                }
+            }
 
             public WaitEntry(
                 WaitHandle waitObject, WaitOrTimerCallback callback, object state,
                 int timeout, bool executeOnlyOnce)
             {
+                _timeTracker = new Diagnostics.Stopwatch();
+                _timeTracker.Start();
                 WaitObject = waitObject;
                 Callback = callback;
                 State = state;
                 Timeout = timeout;
                 ExecuteOnlyOnce = executeOnlyOnce;
-                ExpireAt = new DateTime();
-
-                Reset();
+                _id = Interlocked.Increment(ref _idCounter);
             }
 
             public void Reset()
             {
-                switch (Timeout)
-                {
-                    case -1:
-                        ExpireAt = DateTime.Now.AddYears(1000);
-                        break;
-                    case 0:
-                        ExpireAt = DateTime.Now;
-                        break;
-                    default:
-                        ExpireAt = DateTime.Now.AddMilliseconds(Timeout);
-                        break;
-                }
+                _timeTracker.Reset();
+            }
+
+            public void Dispose()
+            {
+                _timeTracker.Stop();
             }
         }
 
@@ -308,5 +339,5 @@ namespace System.Compatibility
             }
         }
 #endif
-            }
+    }
 }

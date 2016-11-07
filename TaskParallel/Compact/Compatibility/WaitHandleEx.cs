@@ -342,8 +342,11 @@ namespace System.Compatibility
 
         #endregion
 
-#if WindowsCE
+#if WindowsCE && !MOCK
         [DllImport("coredll.dll", EntryPoint = "WaitForMultipleObjects", SetLastError = true)]
+        static extern uint WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool fWaitAll, uint dwMilliseconds);
+#elif WindowsCE && MOCK
+        [DllImport("kernel32.dll", EntryPoint = "WaitForMultipleObjects", SetLastError = true)]
         static extern uint WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool fWaitAll, uint dwMilliseconds);
 #endif
     }

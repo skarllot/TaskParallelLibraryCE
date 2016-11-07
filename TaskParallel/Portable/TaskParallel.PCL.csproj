@@ -103,11 +103,17 @@
     <Compile Include="..\Compact\Compatibility\TaskEx.cs">
       <Link>Compatibility\TaskEx.cs</Link>
     </Compile>
-    <Compile Include="..\Compact\Compatibility\ThreadPoolWaiter.cs">
-      <Link>Compatibility\ThreadPoolWaiter.cs</Link>
+    <Compile Include="..\Compact\Compatibility\ThreadEx.cs">
+      <Link>Compatibility\ThreadEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\ThreadPoolEx.cs">
+      <Link>Compatibility\ThreadPoolEx.cs</Link>
     </Compile>
     <Compile Include="..\Compact\Compatibility\WaitHandleEx.cs">
       <Link>Compatibility\WaitHandleEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Compatibility\WaitOrTimerCallback.cs">
+      <Link>Compatibility\WaitOrTimerCallback.cs</Link>
     </Compile>
     <Compile Include="..\Compact\Future.cs">
       <Link>Future.cs</Link>

@@ -21,7 +21,7 @@ namespace System.Compatibility.Tests
                 Interlocked.Increment(ref counter);
                 doneEventHandle.Set();
             };
-            ThreadPoolWaiter.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+            ThreadPoolEx.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
             Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
             if (!doneEventHandle.WaitOne(Timeout * 2, false))
                 Assert.Fail("Signal was not arrived in a timely manner");
@@ -40,11 +40,11 @@ namespace System.Compatibility.Tests
                 Interlocked.Increment(ref counter);
                 doneEventHandle.Set();
             };
-            ThreadPoolWaiter.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, false);
+            ThreadPoolEx.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, false);
 
             for (int i = 0; i < ListSize; i++)
             {
-                Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
+                ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
                 if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("Signal was not arrived in a timely manner");
 
@@ -67,7 +67,7 @@ namespace System.Compatibility.Tests
 
                 doneEventHandle.Set();
             };
-            ThreadPoolWaiter.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+            ThreadPoolEx.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
             if (!doneEventHandle.WaitOne(Timeout * 4, false))
                 Assert.Fail("Signal was not arrived in a timely manner");
 
@@ -86,7 +86,7 @@ namespace System.Compatibility.Tests
                 AutoResetEvent current = new AutoResetEvent(false);
                 Assert.IsNotNull(current);
                 eventHandles.Add(current);
-                ThreadPoolWaiter.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
+                ThreadPoolEx.RegisterWaitForSingleObject(current, callback, null, Timeout, true);
             }
 
             // Enqueue to another thread to send signals
@@ -124,7 +124,7 @@ namespace System.Compatibility.Tests
 
             for (int i = 0; i < ListSize; i++)
             {
-                ThreadPoolWaiter.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
+                ThreadPoolEx.RegisterWaitForSingleObject(eventHandle, callback, null, Timeout, true);
                 Threading.ThreadPool.QueueUserWorkItem(state => { eventHandle.Set(); });
                 if (!doneEventHandle.WaitOne(Timeout * 2, false))
                     Assert.Fail("{0}: Signal was not arrived in a timely manner", i);
