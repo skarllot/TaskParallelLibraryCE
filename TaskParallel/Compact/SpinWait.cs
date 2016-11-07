@@ -1,6 +1,9 @@
-﻿#if !NET40
-using System.Security.Permissions;
+﻿#if !NET40 || (!NET45 && PCL)
 using System.Diagnostics.CodeAnalysis;
+
+#if !(!NET45 && PCL)
+using System.Security.Permissions;
+#endif
 
 namespace System.Threading
 {
@@ -54,12 +57,15 @@ namespace System.Threading
     /// threads must spin, each should use its own instance of SpinWait.
     /// </para>
     /// </remarks>
-#if !WindowsCE
+#if !WindowsCE && !(!NET45 && PCL)
     [HostProtection(Synchronization = true, ExternalThreading = true)]
 #endif
+#if !(!NET45 && PCL)
     public struct SpinWait
+#else
+    public class SpinWait : IDisposable
+#endif
     {
-
         // These constants determine the frequency of yields versus spinning. The
         // numbers may seem fairly arbitrary, but were derived with at least some
         // thought in the design document.  I fully expect they will need to change
@@ -70,6 +76,12 @@ namespace System.Threading
 
         // The number of times we've spun already.
         private int m_count;
+
+#if (!NET45 && PCL)
+        private readonly ManualResetEvent _sleep = new ManualResetEvent(false);
+#endif
+
+        #region Properties
 
         /// <summary>
         /// Gets the number of times <see cref="SpinOnce"/> has been called on this instance.
@@ -93,6 +105,24 @@ namespace System.Threading
         {
             get { return m_count > YIELD_THRESHOLD || PlatformHelper.IsSingleProcessor; }
         }
+
+        #endregion
+
+        #region Destructor and Dispose
+
+#if (!NET45 && PCL)
+        ~SpinWait()
+        {
+            _sleep.Dispose();
+        }
+
+        public void Dispose()
+        {
+            _sleep.Dispose();
+        }
+#endif
+
+        #endregion
 
         /// <summary>
         /// Performs a single spin.
@@ -124,18 +154,28 @@ namespace System.Threading
 
                 if ((yieldsSoFar % SLEEP_1_EVERY_HOW_MANY_TIMES) == (SLEEP_1_EVERY_HOW_MANY_TIMES - 1))
                 {
+#if !(!NET45 && PCL)
                     Thread.Sleep(1);
+#else
+                    _sleep.WaitOne(1);
+#endif
                 }
                 else if ((yieldsSoFar % SLEEP_0_EVERY_HOW_MANY_TIMES) == (SLEEP_0_EVERY_HOW_MANY_TIMES - 1))
                 {
+#if !(!NET45 && PCL)
                     Thread.Sleep(0);
+#else
+                    _sleep.WaitOne(0);
+#endif
                 }
                 else
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
-#if WindowsCE || DEBUG
+#if (WindowsCE || DEBUG) && !(!NET45 && PCL)
                     Thread.Sleep(0);
+#elif (!NET45 && PCL)
+                    _sleep.WaitOne(0);
 #else
                     Thread.SpinWait(4 << YIELD_THRESHOLD);
 #endif
@@ -154,8 +194,10 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
-#if WindowsCE || DEBUG
+#if (WindowsCE || DEBUG) && !(!NET45 && PCL)
                 Thread.Sleep(0);
+#elif (!NET45 && PCL)
+                _sleep.WaitOne(0);
 #else
                 Thread.SpinWait(4 << m_count);
 #endif

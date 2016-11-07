@@ -1,12 +1,14 @@
 ﻿using System.Threading;
 
-#if WindowsCE || DEBUG
+#if !PCL && (WindowsCE || DEBUG)
 using System.Collections.Generic;
+#elif PCL
+using System.Threading.Tasks;
 #endif
 
 namespace System.Compatibility
 {
-#if WindowsCE
+#if WindowsCE || PCL
     /// <summary>
     /// Represents a method to be called when a <see cref="WaitHandle"/> is signaled or times out.
     /// </summary>
@@ -22,14 +24,14 @@ namespace System.Compatibility
     /// <summary>
     /// Provides a thread that can be used to wait on behalf of other threads, and process timers.
     /// </summary>
-    public static class ThreadPool
+    public static class ThreadPoolWaiter
     {
-#if WindowsCE || DEBUG
+#if !PCL && (WindowsCE || DEBUG)
         static readonly Thread _thread;
         static readonly List<WaitEntry> _registeredWaits = new List<WaitEntry>();
         static readonly ManualResetEvent _addEvent = new ManualResetEvent(true);
 
-        static ThreadPool()
+        static ThreadPoolWaiter()
         {
             _thread = new Thread(WaitsHandler);
             _thread.IsBackground = true;
@@ -113,7 +115,7 @@ namespace System.Compatibility
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             long millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
-#if WindowsCE || DEBUG
+#if WindowsCE || PCL || DEBUG
             if (millisecondsTimeOutInterval < -1 || millisecondsTimeOutInterval > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeOutInterval");
@@ -146,12 +148,13 @@ namespace System.Compatibility
             WaitHandle waitObject, WaitOrTimerCallback callBack, object state,
             int millisecondsTimeOutInterval, bool executeOnlyOnce)
         {
-#if WindowsCE || DEBUG
+#if WindowsCE || PCL || DEBUG
             if (waitObject == null)
                 throw new ArgumentNullException("waitObject");
             if (callBack == null)
                 throw new ArgumentNullException("callback");
 
+#if !PCL
             var entry = new WaitEntry(waitObject, callBack, state,
                 millisecondsTimeOutInterval, executeOnlyOnce);
 
@@ -162,12 +165,33 @@ namespace System.Compatibility
 
             return new RegisteredWaitHandle(waitObject);
 #else
+            ManualResetEvent unregisterEvent = new ManualResetEvent(false);
+            Action internalCallback = () =>
+            {
+                int id;
+                if (millisecondsTimeOutInterval > -1)
+                    id = WaitHandle.WaitAny(
+                        new WaitHandle[] { waitObject, unregisterEvent },
+                        millisecondsTimeOutInterval);
+                else
+                    id = WaitHandle.WaitAny(
+                        new WaitHandle[] { waitObject, unregisterEvent });
+
+                if (id == 0)
+                    callBack(state, false);
+                if (id == WaitHandle.WaitTimeout)
+                    callBack(state, true);
+            };
+            TaskEx.Run(internalCallback);
+            return new RegisteredWaitHandle(unregisterEvent);
+#endif
+#else
             return Threading.ThreadPool.RegisterWaitForSingleObject(
                 waitObject, callBack, state, millisecondsTimeOutInterval, executeOnlyOnce);
 #endif
         }
 
-#if WindowsCE || DEBUG
+#if WindowsCE || PCL || DEBUG
         /// <summary>
         /// Represents a handle that has been registered when calling
         /// <see cref="RegisterWaitForSingleObject(WaitHandle, WaitOrTimerCallback, object, int, bool)"/>.
@@ -175,12 +199,21 @@ namespace System.Compatibility
         /// </summary>
         public sealed class RegisteredWaitHandle
         {
+#if !PCL
             private readonly WaitHandle _waitObject;
 
             internal RegisteredWaitHandle(WaitHandle waitObject)
             {
                 _waitObject = waitObject;
             }
+#else
+            private readonly ManualResetEvent _unregisterEvent;
+
+            internal RegisteredWaitHandle(ManualResetEvent unregisterEvent)
+            {
+                _unregisterEvent = unregisterEvent;
+            }
+#endif
 
             /// <summary>
             /// Cancels a registered wait operation issued by the
@@ -193,6 +226,7 @@ namespace System.Compatibility
                 if (waitObject != null)
                     throw new NotImplementedException("Unregister with WaitHandle is not supported");
 
+#if !PCL
                 Monitor.Enter(_registeredWaits);
                 try
                 {
@@ -211,9 +245,14 @@ namespace System.Compatibility
                 {
                     Monitor.Exit(_registeredWaits);
                 }
+#else
+                return _unregisterEvent.Set();
+#endif
             }
         }
+#endif
 
+#if !PCL && (WindowsCE || DEBUG)
         private sealed class WaitEntry
         {
             public WaitHandle WaitObject { get; set; }
@@ -269,5 +308,5 @@ namespace System.Compatibility
             }
         }
 #endif
-    }
+            }
 }

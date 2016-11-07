@@ -1,8 +1,10 @@
 # Task Parallel Library for .NET 3.5 Compact Edition
 
 The package includes:
-* Task<T> for executing asynchronous operations.
-* Additional Threading operation such as RegisterWaitForSingleObject and SpinWait.
+* Task and Task<T> for executing asynchronous operations.
+* ThreadPoolWaiter provides RegisterWaitForSingleObject for all platforms.
+* SpinWait provides SpinWait and SpinUntil for all platforms.
+* TaskEx provides new methods from .NET 4.5 and .NET 4.6 such as FromResult, FromException and Run.
 
 Tested on Windows CE and Pocket PC.
 

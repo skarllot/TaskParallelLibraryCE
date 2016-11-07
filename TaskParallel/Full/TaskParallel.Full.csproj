@@ -12,25 +12,23 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFrameworkVersion)\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Output\Debug\Full\TaskParallel\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\Output\Debug\Full\TaskParallel\TaskParallel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Output\Release\Full\TaskParallel\</OutputPath>
     <DefineConstants>TRACE;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\Output\Release\Full\TaskParallel\TaskParallel.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,7 +63,8 @@
     <Compile Include="..\Consts.cs">
       <Link>Consts.cs</Link>
     </Compile>
-    <Compile Include="Compatibility\ThreadPool.cs" />
+    <Compile Include="Compatibility\TaskEx.cs" />
+    <Compile Include="Compatibility\ThreadPoolWaiter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Compact\Properties\Resources.pt.resx">

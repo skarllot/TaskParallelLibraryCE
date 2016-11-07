@@ -363,7 +363,7 @@ namespace System.Threading.Tasks
             else
             {
                 WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
-                Compatibility.ThreadPool.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
+                Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
             }
         }
 
@@ -558,7 +558,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
+            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
             return ar;
         }
 
@@ -592,7 +592,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
+            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
             return ar;
         }
 
@@ -625,7 +625,7 @@ namespace System.Threading.Tasks
                     callback(ar);
             };
 
-            Compatibility.ThreadPool.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
+            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
             return ar;
         }
 
@@ -1310,14 +1310,16 @@ namespace System.Threading.Tasks
                 return new Task((Exception)null);
 
             var task = new Task();
+            var timeoutEvent = new ManualResetEvent(false);
             task.MarkStarted();
             WaitOrTimerCallback callback = (state, timedOut) =>
             {
                 task.AtomicStateUpdate(TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK);
                 task._taskCompletedEvent.Set();
+                timeoutEvent.Close();
+                timeoutEvent = null;
             };
-            var timeoutEvent = new ManualResetEvent(false);
-            Compatibility.ThreadPool.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
+            Compatibility.ThreadPoolWaiter.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
 
             return task;
         }

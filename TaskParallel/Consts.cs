@@ -8,7 +8,7 @@ internal static class Consts
     public const string Version = "2.0.0";
 
 #if WindowsCE
-    public const string Title = "TaskParallel (Compact Edition)";
+    public const string Title = "TaskParallel (.NET 3.5 CF)";
     public const string Guid = "fee8e6ad-84e3-4cb0-93ac-a63c25257b0e";
 #else
     public const string Title = "TaskParallel (Full Profile)";

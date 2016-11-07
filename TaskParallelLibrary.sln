@@ -13,20 +13,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.Tests.Full", "TaskParallel.Tests\Full\TaskParallel.Tests.Full.csproj", "{68E17BC4-A3EF-49CC-989D-6E471B60137E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.PCL", "TaskParallel\Portable\TaskParallel.PCL.csproj", "{47B2C4C2-681C-475F-8083-611F072B51CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DBG40|Any CPU = DBG40|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		DIST40|Any CPU = DIST40|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D78F0942-7465-44E3-95EC-B60AC01938B8}.DBG40|Any CPU.ActiveCfg = Debug|Any CPU
 		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78F0942-7465-44E3-95EC-B60AC01938B8}.DIST40|Any CPU.ActiveCfg = Debug|Any CPU
 		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.DBG40|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.DIST40|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.DBG40|Any CPU.ActiveCfg = DBG40|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.DBG40|Any CPU.Build.0 = DBG40|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.DIST40|Any CPU.ActiveCfg = DIST40|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.DIST40|Any CPU.Build.0 = DIST40|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47B2C4C2-681C-475F-8083-611F072B51CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -246,3 +246,4 @@ ModelManifest.xml
 
 NuGet/*/lib/*
 NuGet/*.nupkg
+/Output/
