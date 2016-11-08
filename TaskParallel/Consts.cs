@@ -10,8 +10,19 @@ internal static class Consts
 #if WindowsCE
     public const string Title = "TaskParallel (.NET 3.5 CF)";
     public const string Guid = "fee8e6ad-84e3-4cb0-93ac-a63c25257b0e";
-#else
-    public const string Title = "TaskParallel (Full Profile)";
+#elif PCL
+    public const string Title = "TaskParallel (PCL)";
+#elif NET46
+    public const string Title = "TaskParallel (.NET 4.6)";
+    public const string Guid = "af5dbcb5-3253-4476-97c1-8c78f19076d7";
+#elif NET45
+    public const string Title = "TaskParallel (.NET 4.5)";
+    public const string Guid = "13688ed7-5e76-42d8-8218-ca959998c847";
+#elif NET40
+    public const string Title = "TaskParallel (.NET 4.0)";
+    public const string Guid = "2f8828d1-c200-4793-96d2-2847b7b47743";
+#elif NET35
+    public const string Title = "TaskParallel (.NET 3.5)";
     public const string Guid = "d78f0942-7465-44e3-95ec-b60ac01938b8";
 #endif
 }

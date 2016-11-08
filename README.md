@@ -2,7 +2,6 @@
 
 The package includes:
 * Task and Task<T> for executing asynchronous operations.
-* ThreadPoolWaiter provides RegisterWaitForSingleObject for all platforms.
 * SpinWait provides SpinWait and SpinUntil for all platforms.
 * TaskEx provides new methods from .NET 4.5 and .NET 4.6 such as FromResult, FromException and Run.
 
@@ -21,3 +20,5 @@ Fabrício Godoy <skarllot@gmail.com>
 Version | Last Updated
 --- | ---
 1.0 | 2016-09-21
+1.1 | 2016-10-11
+2.0 | 2016-11-08

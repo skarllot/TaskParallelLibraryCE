@@ -60,9 +60,6 @@
     <Compile Include="..\Compact\TaskTest.cs">
       <Link>TaskTest.cs</Link>
     </Compile>
-    <Compile Include="..\Compact\ThreadPoolWaitTests.cs">
-      <Link>ThreadPoolWaitTests.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
