@@ -721,7 +721,7 @@ namespace System.Threading.Tasks
                 // Can be called synchronously or asynchronously
                 bool needWaitSignal = (bool)state;
                 if (needWaitSignal)
-                    ar.Result = _taskCompletedEvent.WaitOne(millisecondsTimeout);
+                    ar.Result = _taskCompletedEvent.WaitOne(millisecondsTimeout, false);
                 else
                     ar.Result = true;
 
@@ -1444,19 +1444,10 @@ namespace System.Threading.Tasks
             if (millisecondsDelay == 0)
                 return new Task((Exception)null);
 
-            var task = new Task();
-            var timeoutEvent = new ManualResetEvent(false);
-            task.MarkStarted();
-            WaitOrTimerCallback callback = (state, timedOut) =>
+            return Run(() =>
             {
-                task.AtomicStateUpdate(TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK);
-                task._taskCompletedEvent.Set();
-                timeoutEvent.Close();
-                timeoutEvent = null;
-            };
-            Threading.Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
-
-            return task;
+                Thread.Sleep(millisecondsDelay);
+            });
         }
 
         #endregion

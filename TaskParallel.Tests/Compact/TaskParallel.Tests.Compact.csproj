@@ -56,7 +56,6 @@
     <Compile Include="FutureTest.cs" />
     <Compile Include="TaskBehavior.cs" />
     <Compile Include="TaskTest.cs" />
-    <Compile Include="ThreadPoolWaitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />

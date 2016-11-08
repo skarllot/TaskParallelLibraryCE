@@ -12,7 +12,7 @@ namespace TaskParallel.Tests
     [TestClass()]
     public class TaskTest
     {
-        public const int NestingCount = 25;
+        public const int NestingCount = 100;
 
         /// <summary>
         ///A test for IsFaulted
