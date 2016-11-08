@@ -14,11 +14,9 @@ namespace System.Threading.Compatibility
     {
 #if WindowsCE
         static readonly Thread _thread;
-        static readonly ManualResetEvent _startEvent = new ManualResetEvent(false);
-        static readonly ManualResetEvent _addEvent = new ManualResetEvent(false);
-        static readonly ManualResetEvent _unregisterEvent = new ManualResetEvent(false);
-        static readonly ManualResetEvent _addDoneEvent = new ManualResetEvent(false);
-        static readonly ManualResetEvent _unregisterDoneEvent = new ManualResetEvent(false);
+        static readonly AutoResetEvent _addEvent = new AutoResetEvent(false);
+        static readonly AutoResetEvent _unregisterEvent = new AutoResetEvent(false);
+        static readonly AutoResetEvent _doneInteration = new AutoResetEvent(false);
         static volatile WaitEntry _addQueue = null;
         static volatile int _unregisterQueue = -1;
 
@@ -34,52 +32,54 @@ namespace System.Threading.Compatibility
         {
             List<WaitEntry> registeredWaits = new List<WaitEntry>();
 
-            try
+            while (true)
             {
-                while (true)
+                int closestTimeout = Timeout.Infinite;
+                //int closestTimeout = 500;
+
+                if (registeredWaits.Count > 0)
+                    closestTimeout = registeredWaits.Min(w => w.RemainingTime);
+                if (closestTimeout < -1)
+                    closestTimeout = 0;
+
+                WaitHandle[] waitEntries = new WaitHandle[registeredWaits.Count + 2];
+                waitEntries[0] = _addEvent;
+                waitEntries[1] = _unregisterEvent;
+
+                if (waitEntries.Length > 2)
                 {
-                    //int closestTimeout = Timeout.Infinite;
-                    int closestTimeout = 500;
+                    for (int i = 2; i < waitEntries.Length; i++)
+                        waitEntries[i] = registeredWaits[i - 2].WaitObject;
+                }
 
-                    if (registeredWaits.Count > 0)
-                        closestTimeout = registeredWaits.Min(w => w.RemainingTime);
-                    if (closestTimeout < -1)
-                        closestTimeout = 0;
+                int signalIndex = WaitHandleEx.WaitAny(waitEntries, closestTimeout);
+                if (signalIndex > 1 && signalIndex != WaitHandleEx.WaitTimeout)
+                {
+                    WaitEntry signedEntry = registeredWaits[signalIndex - 2];
+                    int remaintingTime = signedEntry.RemainingTime;
+                    ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                        new WaitCallbackArgs(signedEntry.Callback, signedEntry.State, remaintingTime <= 0));
 
-                    WaitHandle[] waitEntries = new WaitHandle[registeredWaits.Count + 2];
-                    waitEntries[0] = _addEvent;
-                    waitEntries[1] = _unregisterEvent;
-
-                    if (waitEntries.Length > 2)
-                    {
-                        for (int i = 2; i < waitEntries.Length; i++)
-                            waitEntries[i] = registeredWaits[i - 2].WaitObject;
-                    }
-
-                    _startEvent.Set();
-                    int signalIndex = WaitHandleEx.WaitAny(waitEntries, closestTimeout);
-                    if (signalIndex > 1 && signalIndex != WaitHandleEx.WaitTimeout)
-                    {
-                        WaitEntry signedEntry = registeredWaits[signalIndex - 2];
-                        int remaintingTime = signedEntry.RemainingTime;
-                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
-                            new WaitCallbackArgs(signedEntry.Callback, signedEntry.State, remaintingTime <= 0));
-
-                        if (signedEntry.ExecuteOnlyOnce)
-                            registeredWaits.RemoveAt(signalIndex - 2);
-                        else
-                            signedEntry.Reset();
-                    }
-                    else if (signalIndex == 0 && _addQueue != null)
+                    if (signedEntry.ExecuteOnlyOnce)
+                        registeredWaits.RemoveAt(signalIndex - 2);
+                    else
+                        signedEntry.Reset();
+                }
+                else if (signalIndex == 0)
+                {
+                    lock (_addEvent)
                     {
                         if (_addQueue == null)
                             throw new Exception("Should not try to register null wait entry");
 
                         registeredWaits.Add(_addQueue);
                         _addQueue = null;
-                        _addDoneEvent.Set();
+                        _addEvent.Reset();
                     }
-                    else if (signalIndex == 1)
+                }
+                else if (signalIndex == 1)
+                {
+                    lock (_unregisterEvent)
                     {
                         if (_unregisterQueue == -1)
                             throw new Exception("Should not try to unregister with uninitialized identifier");
@@ -94,32 +94,32 @@ namespace System.Threading.Compatibility
                         }
 
                         _unregisterQueue = -1;
-                        _unregisterDoneEvent.Set();
+                        _unregisterEvent.Reset();
                     }
-
-                    for (int i = registeredWaits.Count - 1; i >= 0; i--)
-                    {
-                        WaitEntry current = registeredWaits[i];
-                        if (current == null)
-                            throw new Exception("Registed null wait entry at: " + i.ToString());
-
-                        if (current.RemainingTime <= 0)
-                        {
-                            ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
-                                new WaitCallbackArgs(current.Callback, current.State, true));
-
-                            if (current.ExecuteOnlyOnce)
-                                registeredWaits.RemoveAt(i);
-                            else
-                                current.Reset();
-                        }
-                    }
-
-                    Thread.Sleep(1);
                 }
+
+                _doneInteration.Set();
+
+                for (int i = registeredWaits.Count - 1; i >= 0; i--)
+                {
+                    WaitEntry current = registeredWaits[i];
+                    if (current == null)
+                        throw new Exception("Registed null wait entry at: " + i.ToString());
+
+                    if (current.RemainingTime <= 0)
+                    {
+                        ThreadPool.QueueUserWorkItem(WaitHandlerCallback,
+                            new WaitCallbackArgs(current.Callback, current.State, true));
+
+                        if (current.ExecuteOnlyOnce)
+                            registeredWaits.RemoveAt(i);
+                        else
+                            current.Reset();
+                    }
+                }
+
+                Thread.Sleep(1);
             }
-            catch (ThreadAbortException)
-            { }
         }
 
         private static void WaitHandlerCallback(object stateObject)
@@ -195,20 +195,19 @@ namespace System.Threading.Compatibility
             var entry = new WaitEntry(waitObject, callBack, state,
                 millisecondsTimeOutInterval, executeOnlyOnce);
 
-            _startEvent.WaitOne();
-
             lock (_thread)
             {
-                if (_addQueue != null)
-                    throw new Exception("The previous wait entry on queue should be consumed already");
+                lock (_addEvent)
+                {
+                    if (_addQueue != null)
+                        throw new Exception("The previous wait entry on queue should be consumed already");
 
-                _addQueue = entry;
+                    _addQueue = entry;
+                }
+
                 _addEvent.Set();
                 Thread.Sleep(1);
-                _addDoneEvent.WaitOne();
-
-                _addQueue = null;
-                _addEvent.Reset();
+                _doneInteration.WaitOne();
             }
 
             return new RegisteredWaitHandle(entry.Id);
@@ -274,16 +273,19 @@ namespace System.Threading.Compatibility
                     throw new NotImplementedException("Unregister with WaitHandle is not supported");
 
 #if WindowsCE
-                _startEvent.WaitOne();
-
                 lock (_thread)
                 {
-                    _unregisterQueue = _waitId;
-                    _unregisterEvent.Set();
-                    _unregisterDoneEvent.WaitOne();
+                    lock (_unregisterEvent)
+                    {
+                        if (_unregisterQueue != -1)
+                            throw new Exception("The previous wait identifier on unregister queue should be consumed already");
 
-                    _unregisterQueue = -1;
-                    _unregisterEvent.Reset();
+                        _unregisterQueue = _waitId;
+                    }
+
+                    _unregisterEvent.Set();
+                    Thread.Sleep(1);
+                    _doneInteration.WaitOne();
                 }
 
                 return _unregisterQueue != _waitId;

@@ -364,8 +364,12 @@ namespace System.Threading.Tasks
             }
             else
             {
-                WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
-                Threading.Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
+                AsyncCallback internalCallback = ar =>
+                {
+                    _continueSource.InternalEndWait(ar);
+                    TaskStartAction(ar.AsyncState);
+                };
+                _continueSource.BeginWait(false, internalCallback, null);
             }
         }
 
@@ -774,16 +778,24 @@ namespace System.Threading.Tasks
             if (asyncResult == null)
                 throw new ArgumentNullException("asyncResult");
 
-            var waitHandle = asyncResult as WaitAsyncResult;
-            if (waitHandle == null)
+            if (!(asyncResult is WaitAsyncResult))
                 throw new ArgumentException("asyncResult was not returned by a call to the BeginWait method", "asyncResult");
 
-            if (!waitHandle.EventHandler.WaitOne())
-                throw new InvalidOperationException("Error waiting for wait handle signal");
-            waitHandle.Dispose();
+            bool result = InternalEndWait(asyncResult);
 
             if (_exceptions.Count > 0)
                 throw this.Exception;
+
+            return result;
+        }
+
+        // Avoid checking and exceptions
+        private bool InternalEndWait(IAsyncResult asyncResult)
+        {
+            var waitHandle = (WaitAsyncResult)asyncResult;
+            if (!waitHandle.EventHandler.WaitOne())
+                throw new InvalidOperationException("Error waiting for wait handle signal");
+            waitHandle.Dispose();
 
             return waitHandle.Result;
         }
