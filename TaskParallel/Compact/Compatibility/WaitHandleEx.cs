@@ -1,11 +1,9 @@
-﻿using System.Threading;
-
-#if WindowsCE
+﻿#if WindowsCE
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 #endif
 
-namespace System.Compatibility
+namespace System.Threading.Compatibility
 {
     /// <summary>
     /// Provides means to wait for multiple handles.

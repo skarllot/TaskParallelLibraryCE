@@ -1,10 +1,8 @@
-﻿using System.Threading;
-
-#if PCL && NET45
+﻿#if PCL && NET45
 using System.Threading.Tasks;
 #endif
 
-namespace System.Compatibility
+namespace System.Threading.Compatibility
 {
     /// <summary>
     /// Provides a portable <see cref="Sleep(int)"/>.

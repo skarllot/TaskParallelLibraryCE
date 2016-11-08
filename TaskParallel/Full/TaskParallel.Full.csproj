@@ -46,6 +46,9 @@
     <Compile Include="..\Compact\AggregateException.cs">
       <Link>AggregateException.cs</Link>
     </Compile>
+    <Compile Include="..\Compact\Compatibility\SynchronizationContext.cs">
+      <Link>Compatibility\SynchronizationContext.cs</Link>
+    </Compile>
     <Compile Include="..\Compact\Compatibility\TaskEx.cs">
       <Link>Compatibility\TaskEx.cs</Link>
     </Compile>

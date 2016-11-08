@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace System.Compatibility
+namespace System.Threading.Tasks.Compatibility
 {
     /// <summary>
     /// Provides new <see cref="Task"/> methods introduced in .NET 4.5 and .NET 4.6.

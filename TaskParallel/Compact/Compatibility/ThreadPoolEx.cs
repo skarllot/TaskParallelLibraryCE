@@ -1,13 +1,11 @@
-﻿using System.Threading;
-
-#if WindowsCE
+﻿#if WindowsCE
 using System.Collections.Generic;
 using System.Linq;
 #elif PCL
 using System.Threading.Tasks;
 #endif
 
-namespace System.Compatibility
+namespace System.Threading.Compatibility
 {
     /// <summary>
     /// Provides a thread that can be used to wait on behalf of other threads, and process timers.
@@ -232,7 +230,7 @@ namespace System.Compatibility
                 if (id == WaitHandle.WaitTimeout)
                     callBack(state, true);
             };
-            TaskEx.Run(internalCallback);
+            Tasks.Compatibility.TaskEx.Run(internalCallback);
             return new RegisteredWaitHandle(unregisterEvent);
 #else
             return ThreadPool.RegisterWaitForSingleObject(

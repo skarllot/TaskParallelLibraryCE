@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Threading;
 
-namespace System.Compatibility.Tests
+namespace System.Threading.Compatibility.Tests
 {
     [TestClass]
     public class ThreadPoolWaitTests

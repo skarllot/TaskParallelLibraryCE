@@ -24,6 +24,8 @@ namespace System.Threading.Tasks
         /// </summary>
         protected readonly object _stateObject;
 
+        private Action _waitCallback;
+
 
         /// <summary>
         /// A set of exceptions occurred when trying to execute current task.
@@ -363,7 +365,7 @@ namespace System.Threading.Tasks
             else
             {
                 WaitOrTimerCallback callback = (state, timedOut) => TaskStartAction(null);
-                Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
+                Threading.Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_continueSource._taskCompletedEvent, callback, null, -1, true);
             }
         }
 
@@ -396,8 +398,16 @@ namespace System.Threading.Tasks
             }
             finally
             {
+                // Execute wait callback if any
+                bool isActionLocked = Monitor.TryEnter(_action);
+                if (isActionLocked && _waitCallback != null)
+                    _waitCallback();
+
                 AtomicStateUpdate(TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK);
                 _taskCompletedEvent.Set();
+
+                if (isActionLocked)
+                    Monitor.Exit(_action);
             }
         }
 
@@ -548,17 +558,64 @@ namespace System.Threading.Tasks
         /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
         public IAsyncResult BeginWait(AsyncCallback callback, object stateObject)
         {
+            return BeginWait(true, callback, stateObject);
+        }
+
+        /// <summary>
+        /// Waits asynchronously for the <see cref="Task"/> to complete execution.
+        /// </summary>
+        /// <param name="continueOnCapturedContext">
+        /// true to attempt to marshal the continuation back to the original
+        /// context captured; otherwise, false.
+        /// </param>
+        /// <param name="callback">The <see cref="AsyncCallback"/> delegate.</param>
+        /// <param name="stateObject">An object that contains state information for this request.</param>
+        /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
+        public IAsyncResult BeginWait(bool continueOnCapturedContext, AsyncCallback callback, object stateObject)
+        {
+#if WindowsCE
+            Threading.Compatibility.SynchronizationContext syncContext = null;
+            if (continueOnCapturedContext)
+                syncContext = Threading.Compatibility.SynchronizationContext.Current;
+#else
+            SynchronizationContext syncContext = null;
+            if (continueOnCapturedContext)
+                syncContext = SynchronizationContext.Current;
+#endif
+
             var ar = new WaitAsyncResult(stateObject);
-            WaitOrTimerCallback internalCallback = (state, timedOut) =>
+            Action waitCallback = () =>
             {
-                ar.Result = !timedOut;
+                // Always true because lacks timeout
+                ar.Result = true;
                 ar.EventHandler.Set();
 
                 if (callback != null)
-                    callback(ar);
+                {
+                    if (syncContext == null)
+                        callback(ar);
+                    else
+                        syncContext.Send(s => { callback((IAsyncResult)s); }, ar);
+                }
             };
 
-            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, -1, true);
+            bool isTaskCompleted = false;
+            lock (_action)
+            {
+                isTaskCompleted = _taskCompletedEvent.WaitOne(0, false);
+                if (!isTaskCompleted)
+                {
+                    // Enqueue to execute when Task is finalizing
+                    _waitCallback = waitCallback;
+                }
+            }
+
+            if (isTaskCompleted)
+            {
+                // Execute callback synchrounously
+                waitCallback();
+            }
+
             return ar;
         }
 
@@ -576,24 +633,34 @@ namespace System.Threading.Tasks
         /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
         public IAsyncResult BeginWait(TimeSpan timeout, AsyncCallback callback, object stateObject)
         {
+            return BeginWait(timeout, true, callback, stateObject);
+        }
+
+        /// <summary>
+        /// Waits asynchronously for the <see cref="Task"/> to complete execution
+        /// within a specified time interval.
+        /// </summary>
+        /// <param name="timeout">
+        /// A System.TimeSpan that represents the number of milliseconds to
+        /// wait, or a System.TimeSpan that represents -1 milliseconds to wait
+        /// indefinitely.
+        /// </param>
+        /// <param name="continueOnCapturedContext">
+        /// true to attempt to marshal the continuation back to the original
+        /// context captured; otherwise, false.
+        /// </param>
+        /// <param name="callback">The <see cref="AsyncCallback"/> delegate.</param>
+        /// <param name="stateObject">An object that contains state information for this request.</param>
+        /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
+        public IAsyncResult BeginWait(TimeSpan timeout, bool continueOnCapturedContext, AsyncCallback callback, object stateObject)
+        {
             long totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
 
-            var ar = new WaitAsyncResult(stateObject);
-            WaitOrTimerCallback internalCallback = (state, timedOut) =>
-            {
-                ar.Result = !timedOut;
-                ar.EventHandler.Set();
-
-                if (callback != null)
-                    callback(ar);
-            };
-
-            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, totalMilliseconds, true);
-            return ar;
+            return BeginWait((int)totalMilliseconds, continueOnCapturedContext, callback, stateObject);
         }
 
         /// <summary>
@@ -610,22 +677,78 @@ namespace System.Threading.Tasks
         /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
         public IAsyncResult BeginWait(int millisecondsTimeout, AsyncCallback callback, object stateObject)
         {
+            return BeginWait(millisecondsTimeout, true, callback, stateObject);
+        }
+
+        /// <summary>
+        /// Waits asynchronously for the <see cref="Task"/> to complete execution
+        /// within a specified time interval.
+        /// </summary>
+        /// <param name="millisecondsTimeout">
+        /// A System.TimeSpan that represents the number of milliseconds to
+        /// wait, or a System.TimeSpan that represents -1 milliseconds to wait
+        /// indefinitely.
+        /// </param>
+        /// <param name="continueOnCapturedContext">
+        /// true to attempt to marshal the continuation back to the original
+        /// context captured; otherwise, false.
+        /// </param>
+        /// <param name="callback">The <see cref="AsyncCallback"/> delegate.</param>
+        /// <param name="stateObject">An object that contains state information for this request.</param>
+        /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
+        public IAsyncResult BeginWait(int millisecondsTimeout, bool continueOnCapturedContext, AsyncCallback callback, object stateObject)
+        {
             if (millisecondsTimeout < -1)
-            {
                 throw new ArgumentOutOfRangeException("timeout");
-            }
+
+#if WindowsCE
+            Threading.Compatibility.SynchronizationContext syncContext = null;
+            if (continueOnCapturedContext)
+                syncContext = Threading.Compatibility.SynchronizationContext.Current;
+#else
+            SynchronizationContext syncContext = null;
+            if (continueOnCapturedContext)
+                syncContext = SynchronizationContext.Current;
+#endif
 
             var ar = new WaitAsyncResult(stateObject);
-            WaitOrTimerCallback internalCallback = (state, timedOut) =>
+            WaitCallback internalCallback = state =>
             {
-                ar.Result = !timedOut;
+                // Can be called synchronously or asynchronously
+                bool needWaitSignal = (bool)state;
+                if (needWaitSignal)
+                    ar.Result = _taskCompletedEvent.WaitOne(millisecondsTimeout);
+                else
+                    ar.Result = true;
+
                 ar.EventHandler.Set();
 
                 if (callback != null)
-                    callback(ar);
+                {
+                    if (syncContext == null)
+                        callback(ar);
+                    else
+                        syncContext.Send(s => { callback((IAsyncResult)s); }, ar);
+                }
             };
 
-            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(_taskCompletedEvent, internalCallback, stateObject, millisecondsTimeout, true);
+            bool isTaskCompleted = false;
+            lock (_action)
+            {
+                isTaskCompleted = _taskCompletedEvent.WaitOne(0, false);
+                if (!isTaskCompleted)
+                {
+                    // Enqueue callback for futher execution
+                    ThreadPool.QueueUserWorkItem(internalCallback, true);
+                }
+            }
+
+            if (isTaskCompleted)
+            {
+                // Call callback synchronously
+                internalCallback(false);
+            }
+
             return ar;
         }
 
@@ -913,7 +1036,7 @@ namespace System.Threading.Tasks
 
         #endregion
 
-        #region Wait methods
+        #region Static Wait methods
 
         /// <summary>
         /// Waits for all of the provided <see cref="Task"/> objects to complete execution.
@@ -1319,7 +1442,7 @@ namespace System.Threading.Tasks
                 timeoutEvent.Close();
                 timeoutEvent = null;
             };
-            Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
+            Threading.Compatibility.ThreadPoolEx.RegisterWaitForSingleObject(timeoutEvent, callback, null, millisecondsDelay, true);
 
             return task;
         }
