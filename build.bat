@@ -16,15 +16,15 @@ set net35path="C:\Windows\Microsoft.NET\Framework\v3.5"
 set msbuild="%net35path%\MSBuild.exe"
 set targetscf="%net35path%\Microsoft.CompactFramework.CSharp.targets"
 if not exist %msbuild% (
-	echo Error trying to find MSBuild 3.5 executable
-	exit /B 1
+    echo Error trying to find MSBuild 3.5 executable
+    exit /B 1
 )
 if not exist %targetscf% (
-	echo Error trying to find Compact Framework targets
+    echo Error trying to find Compact Framework targets
     echo.
-	echo Install '.NET Compact Framework Redistributable'
-	echo and 'Power Toys for .NET Compact Framework 3.5'
-	exit /B 1
+    echo Install '.NET Compact Framework Redistributable'
+    echo and 'Power Toys for .NET Compact Framework 3.5'
+    exit /B 1
 )
 set SolutionFile=%SolutionFileCF%
 
@@ -35,11 +35,11 @@ REM Full .NET Framework
 REM ============================================================================
 set msbuild="C:\Program Files (x86)\MSBuild\14.0\bin\msbuild"
 if not exist %msbuild% (
-	set msbuild="C:\Program Files (x86)\MSBuild\12.0\bin\msbuild"
+    set msbuild="C:\Program Files (x86)\MSBuild\12.0\bin\msbuild"
 )
 if not exist %msbuild% (
-	echo Error trying to find MSBuild executable
-	exit /B 1
+    echo Error trying to find MSBuild executable
+    exit /B 1
 )
 set SolutionFile=%SolutionFileFull%
 
@@ -73,7 +73,7 @@ set Optional=%~7
 set Delim=%%3B
 
 if %GLOBALERROR% == 1 (
-	EXIT /B %ERRORLEVEL%
+    EXIT /B %ERRORLEVEL%
 )
 
 set OutputPath=%SolutionDir%Output\%TargetDir%
@@ -85,7 +85,7 @@ rmdir /s/q "%OutputPath%" 2> nul
 rmdir /s/q "%ObjOutputPath%"
 
 if %ERRORLEVEL% == 0 (
-	echo [  OK  ]
+    echo [  OK  ]
 ) else (
     if "%Optional%" == "optional" (
         echo [ SKIP ]
