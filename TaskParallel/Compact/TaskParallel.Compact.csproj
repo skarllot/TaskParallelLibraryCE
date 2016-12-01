@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\Output\Debug\Compact\TaskParallel\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WindowsCE NETFX_35 NETFX_CE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WindowsCE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>

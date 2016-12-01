@@ -10,7 +10,7 @@ rmdir /s/q "%SolutionDir%Output" 2> nul
 mkdir "%SolutionDir%Output"
 
 REM ============================================================================
-REM Compact .NET Framework
+REM .NET Compact Framework
 REM ============================================================================
 set net35path="C:\Windows\Microsoft.NET\Framework\v3.5"
 set msbuild="%net35path%\MSBuild.exe"
@@ -31,7 +31,7 @@ set SolutionFile=%SolutionFileCF%
 CALL :Build TaskParallel_Compact Release v3.5 "" net35-cf "TRACE;WindowsCE"
 
 REM ============================================================================
-REM Full .NET Framework
+REM .NET Framework (Full)
 REM ============================================================================
 set msbuild="C:\Program Files (x86)\MSBuild\14.0\bin\msbuild"
 if not exist %msbuild% (
@@ -43,7 +43,6 @@ if not exist %msbuild% (
 )
 set SolutionFile=%SolutionFileFull%
 
-CALL :Build TaskParallel_Full WINCE v3.5 Client net35-cf-test "TRACE;WindowsCE"
 CALL :Build TaskParallel_Full Release v3.5 Client net35 "TRACE;NET35"
 CALL :Build TaskParallel_Full Release v4.0 "" net40 "TRACE;NET35;NET40"
 CALL :Build TaskParallel_Full Release v4.5 "" net45 "TRACE;NET35;NET40;NET45"
