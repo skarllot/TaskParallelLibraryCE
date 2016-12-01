@@ -1,22 +1,47 @@
 @echo off
 setlocal enabledelayedexpansion
+set SolutionDir=%~dp0
+set SolutionFileFull=TaskParallelLibrary.sln
+set SolutionFileCF=TaskParallelLibrary.vs2008.sln
+set GLOBALERROR=0
+echo building all projects in the solution (Release)
 
+rmdir /s/q "%SolutionDir%Output" 2> nul
+mkdir "%SolutionDir%Output"
+
+REM ============================================================================
+REM Compact .NET Framework
+REM ============================================================================
+set net35path="C:\Windows\Microsoft.NET\Framework\v3.5"
+set msbuild="%net35path%\MSBuild.exe"
+set targetscf="%net35path%\Microsoft.CompactFramework.CSharp.targets"
+if not exist %msbuild% (
+	echo Error trying to find MSBuild 3.5 executable
+	exit /B 1
+)
+if not exist %targetscf% (
+	echo Error trying to find Compact Framework targets
+    echo.
+	echo Install '.NET Compact Framework Redistributable'
+	echo and 'Power Toys for .NET Compact Framework 3.5'
+	exit /B 1
+)
+set SolutionFile=%SolutionFileCF%
+
+CALL :Build TaskParallel_Compact Release v3.5 "" net35-cf "TRACE;WindowsCE"
+
+REM ============================================================================
+REM Full .NET Framework
+REM ============================================================================
 set msbuild="C:\Program Files (x86)\MSBuild\14.0\bin\msbuild"
 if not exist %msbuild% (
 	set msbuild="C:\Program Files (x86)\MSBuild\12.0\bin\msbuild"
 )
 if not exist %msbuild% (
-	echo "Error trying to find MSBuild executable"
+	echo Error trying to find MSBuild executable
 	exit /B 1
 )
-set SolutionDir=%~dp0
-set SolutionFile=TaskParallelLibrary.sln
-set GLOBALERROR=0
-
-echo building all projects in the solution (Release)
-
-rmdir /s/q "%SolutionDir%Output" 2> nul
-mkdir "%SolutionDir%Output"
+set SolutionFile=%SolutionFileFull%
 
 CALL :Build TaskParallel_Full WINCE v3.5 Client net35-cf-test "TRACE;WindowsCE"
 CALL :Build TaskParallel_Full Release v3.5 Client net35 "TRACE;NET35"
@@ -54,7 +79,7 @@ if %GLOBALERROR% == 1 (
 set OutputPath=%SolutionDir%Output\%TargetDir%
 set ObjOutputPath=%SolutionDir%Output\obj
 set Constants=%Constants:;=!Delim!%
-<nul set /p ="building .NET Framework %TargetFX% %Profile% "
+<nul set /p ="building %TargetFX% %Profile% (%TargetDir%) "
 rmdir /s/q "%OutputPath%" 2> nul
 %msbuild% %SolutionDir%%SolutionFile% /target:%Project% /verbosity:minimal /property:Configuration=%Configuration%;TargetFrameworkVersion=%TargetFX%;TargetFrameworkProfile=%Profile%;OutputPath=%OutputPath%\;DefineConstants=%Constants%;BaseIntermediateOutputPath=%ObjOutputPath%\ > output_rel.log
 rmdir /s/q "%ObjOutputPath%"
