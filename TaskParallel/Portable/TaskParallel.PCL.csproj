@@ -25,7 +25,6 @@
     <DefineConstants>TRACE;DEBUG;NET35;NET40;NET45;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <HasTypeInfo>true</HasTypeInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,7 +32,6 @@
     <DefineConstants>TRACE;NET35;NET40;NET45;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <HasTypeInfo>true</HasTypeInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DBG40|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,7 +42,6 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>Profile136</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <HasTypeInfo>false</HasTypeInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DIST40|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,46 +51,16 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>Profile136</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <HasTypeInfo>false</HasTypeInfo>
   </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(HasTypeInfo)' == 'true' ">
-      <ItemGroup>
-        <EmbeddedResource Include="Properties\Resources.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-      </ItemGroup>
-      <ItemGroup>
-        <Compile Include="Properties\Resources.Designer.cs">
-          <AutoGen>True</AutoGen>
-          <DesignTime>True</DesignTime>
-          <DependentUpon>Resources.resx</DependentUpon>
-        </Compile>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(HasTypeInfo)' == 'false' ">
-      <ItemGroup>
-        <EmbeddedResource Include="..\Compact\Properties\Resources.resx">
-          <Link>Properties\Resources.resx</Link>
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-      </ItemGroup>
-      <ItemGroup>
-        <Compile Include="..\Compact\Properties\Resources.Designer.cs">
-          <Link>Properties\Resources.Designer.cs</Link>
-          <AutoGen>True</AutoGen>
-          <DesignTime>True</DesignTime>
-          <DependentUpon>Resources.resx</DependentUpon>
-        </Compile>
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <EmbeddedResource Include="..\Compact\Properties\Resources.pt.resx">
       <Link>Properties\Resources.pt.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Compact\Properties\Resources.resx">
+      <Link>Properties\Resources.resx</Link>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +81,12 @@
     </Compile>
     <Compile Include="..\Compact\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Compact\Properties\Resources.Designer.cs">
+      <Link>Properties\Resources.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="..\Compact\SpinWait.cs">
       <Link>SpinWait.cs</Link>

@@ -25,4 +25,16 @@ internal static class Consts
     public const string Title = "TaskParallel (.NET 3.5)";
     public const string Guid = "d78f0942-7465-44e3-95ec-b60ac01938b8";
 #endif
+
+#if (!PCL && !NET45) || (PCL && !NET45)
+    /// <summary>
+    /// Gets the type itself (for Resource compatibility).
+    /// </summary>
+    /// <param name="type">A type.</param>
+    /// <returns>The type itself.</returns>
+    public static System.Type GetTypeInfo(this System.Type type)
+    {
+        return type;
+    }
+#endif
 }
