@@ -1,0 +1,22 @@
+﻿<!--
+***********************************************************************************************
+Microsoft.CompactFramework.CSharp.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <FrameworkRegistryBase>Software\Microsoft\.NETCompactFramework</FrameworkRegistryBase>
+        <AssemblyFoldersSuffix>$(PlatformFamilyName)\AssemblyFoldersEx</AssemblyFoldersSuffix>
+        <AssemblyFoldersExConditions>,OSVersion=$(OSVersion):Platform=$(PlatformID)</AssemblyFoldersExConditions>
+        <TargetCompactFramework>true</TargetCompactFramework>
+    </PropertyGroup>
+    <Import Project="C:\Windows\Microsoft.NET\Framework\v3.5\Microsoft.CSharp.Targets" />
+    <Import Project="C:\Windows\Microsoft.NET\Framework\v3.5\Microsoft.CompactFramework.Common.targets" />
+</Project>

@@ -244,6 +244,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-.nuget/*/lib/*
-.nuget/*.nupkg
-/Output/
+/[Oo]utput/
