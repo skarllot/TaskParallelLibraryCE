@@ -1,0 +1,66 @@
+{
+  "title": "Provides a backport of Task for .NET 3.5 Compact Edition",
+  "version": "3.0.0-*",
+  "language": "en-US",
+  "authors": [ "Fabricio Godoy" ],
+  "packOptions": {
+    "owners": [ "skarllot", "fgodoy-verion" ],
+    "projectUrl": "https://github.com/skarllot/TaskParallelLibraryCE",
+    "licenseUrl": "https://github.com/skarllot/TaskParallelLibraryCE/blob/master/LICENSE.TXT",
+    "requireLicenseAcceptance": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/skarllot/TaskParallelLibraryCE"
+    }
+  },
+
+  "buildOptions": {
+    "outputName": "TaskParallel",
+    "xmlDoc": true
+  },
+
+  "frameworks": {
+    "netstandard1.0": {
+      "dependencies": {
+        "System.Collections": "4.3.0",
+        "System.Diagnostics.Debug": "4.3.0",
+        "System.Resources.ResourceManager": "4.3.0",
+        "System.Threading": "4.3.0",
+        "System.Threading.Tasks": "4.3.0"
+      }
+    },
+    "netstandard1.3": {
+      "dependencies": {
+        "System.Collections": "4.3.0",
+        "System.Diagnostics.Debug": "4.3.0",
+        "System.Resources.ResourceManager": "4.3.0",
+        "System.Threading": "4.3.0",
+        "System.Threading.Tasks": "4.3.0"
+      }
+    },
+    "net35": {},
+    "net40": {},
+    "net45": {},
+    "net451": {
+      "buildOptions": {
+        "define": [ "NET45" ]
+      }
+    },
+    "net452": {
+      "buildOptions": {
+        "define": [ "NET45" ]
+      }
+    },
+    "net46": {},
+    "net461": {
+      "buildOptions": {
+        "define": [ "NET46" ]
+      }
+    },
+    "net462": {
+      "buildOptions": {
+        "define": [ "NET46" ]
+      }
+    }
+  }
+}

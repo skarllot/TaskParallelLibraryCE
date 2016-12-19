@@ -1,4 +1,4 @@
-﻿#if !NET40
+﻿#if NET35 || WindowsCE
 using System.Collections.Generic;
 using System.Linq;
 
@@ -577,15 +577,9 @@ namespace System.Threading.Tasks
         /// <returns>An <see cref="IAsyncResult"/> that references the asynchronous wait.</returns>
         public IAsyncResult BeginWait(bool continueOnCapturedContext, AsyncCallback callback, object stateObject)
         {
-#if WindowsCE
-            Threading.Compatibility.SynchronizationContext syncContext = null;
-            if (continueOnCapturedContext)
-                syncContext = Threading.Compatibility.SynchronizationContext.Current;
-#else
             SynchronizationContext syncContext = null;
             if (continueOnCapturedContext)
                 syncContext = SynchronizationContext.Current;
-#endif
 
             var ar = new WaitAsyncResult(stateObject);
             Action waitCallback = () =>
@@ -705,15 +699,9 @@ namespace System.Threading.Tasks
             if (millisecondsTimeout < -1)
                 throw new ArgumentOutOfRangeException("timeout");
 
-#if WindowsCE
-            Threading.Compatibility.SynchronizationContext syncContext = null;
-            if (continueOnCapturedContext)
-                syncContext = Threading.Compatibility.SynchronizationContext.Current;
-#else
             SynchronizationContext syncContext = null;
             if (continueOnCapturedContext)
                 syncContext = SynchronizationContext.Current;
-#endif
 
             var ar = new WaitAsyncResult(stateObject);
             WaitCallback internalCallback = state =>
@@ -1737,4 +1725,8 @@ namespace System.Threading.Tasks
         #endregion
     }
 }
+#else
+using System.Runtime.CompilerServices;
+
+[assembly: TypeForwardedTo(typeof(System.Threading.Tasks.Task))]
 #endif

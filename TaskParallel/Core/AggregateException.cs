@@ -1,4 +1,4 @@
-﻿#if !NET40
+﻿#if NET35 || WindowsCE
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -381,4 +381,8 @@ namespace System
     }
 
 }
+#else
+using System.Runtime.CompilerServices;
+
+[assembly: TypeForwardedTo(typeof(System.AggregateException))]
 #endif

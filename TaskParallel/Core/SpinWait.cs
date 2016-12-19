@@ -1,7 +1,7 @@
-﻿#if !NET40 || (!NET45 && PCL)
+﻿#if NET35 || WindowsCE
 using System.Diagnostics.CodeAnalysis;
 
-#if !(!NET45 && PCL)
+#if !WindowsCE
 using System.Security.Permissions;
 #endif
 
@@ -57,7 +57,7 @@ namespace System.Threading
     /// threads must spin, each should use its own instance of SpinWait.
     /// </para>
     /// </remarks>
-#if !WindowsCE && !(!NET45 && PCL)
+#if !WindowsCE
     [HostProtection(Synchronization = true, ExternalThreading = true)]
 #endif
     public struct SpinWait
@@ -140,7 +140,7 @@ namespace System.Threading
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
-#if WindowsCE || (!NET45 && PCL)
+#if WindowsCE
                     Compatibility.ThreadEx.Sleep(0);
 #else
                     Thread.SpinWait(4 << YIELD_THRESHOLD);
@@ -160,7 +160,7 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
-#if WindowsCE || (!NET45 && PCL)
+#if WindowsCE
                 Compatibility.ThreadEx.Sleep(0);
 #else
                 Thread.SpinWait(4 << m_count);

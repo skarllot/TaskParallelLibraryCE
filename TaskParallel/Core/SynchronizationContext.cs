@@ -1,7 +1,7 @@
 ﻿#if WindowsCE
 using System.Collections.Generic;
 
-namespace System.Threading.Compatibility
+namespace System.Threading
 {
     /// <summary>
     /// Represents a method to be called when a message is to be dispatched to
@@ -93,4 +93,8 @@ namespace System.Threading.Compatibility
         }
     }
 }
+#else
+using System.Runtime.CompilerServices;
+
+[assembly: TypeForwardedTo(typeof(System.Threading.SynchronizationContext))]
 #endif

@@ -1,4 +1,4 @@
-﻿#if PCL && NET45
+﻿#if NETSTANDARD1_0 || NETSTANDARD1_3
 using System.Threading.Tasks;
 #endif
 
@@ -24,13 +24,7 @@ namespace System.Threading.Compatibility
         /// </exception>
         public static void Sleep(int millisecondsTimeout)
         {
-#if (!NET45 && PCL)
-            // Enforce thread suspend
-            if (millisecondsTimeout == 0)
-                millisecondsTimeout = 1;
-
-            _sleep.WaitOne(millisecondsTimeout);
-#elif PCL
+#if NETSTANDARD1_0 || NETSTANDARD1_3
             Task.Delay(millisecondsTimeout).Wait();
 #else
             Thread.Sleep(millisecondsTimeout);

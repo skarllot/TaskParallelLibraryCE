@@ -3,17 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.Full", "TaskParallel\Full\TaskParallel.Full.csproj", "{D78F0942-7465-44E3-95EC-B60AC01938B8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C3AB3A6F-4D65-4E1C-B1F6-06105F7B9390}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.TXT = LICENSE.TXT
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.Tests.Full", "TaskParallel.Tests\Full\TaskParallel.Tests.Full.csproj", "{68E17BC4-A3EF-49CC-989D-6E471B60137E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.Tests", "TaskParallel.Tests\Full\TaskParallel.Tests.csproj", "{68E17BC4-A3EF-49CC-989D-6E471B60137E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskParallel.PCL", "TaskParallel\Portable\TaskParallel.PCL.csproj", "{47B2C4C2-681C-475F-8083-611F072B51CD}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TaskParallel", "TaskParallel\Core\TaskParallel.xproj", "{480B3F64-D3BE-43F3-8640-D7DC15A8C576}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +22,6 @@ Global
 		WINCE|Any CPU = WINCE|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.DBG40|Any CPU.ActiveCfg = Debug|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.DIST40|Any CPU.ActiveCfg = Debug|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.WINCE|Any CPU.ActiveCfg = WINCE|Any CPU
-		{D78F0942-7465-44E3-95EC-B60AC01938B8}.WINCE|Any CPU.Build.0 = WINCE|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.DBG40|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -40,15 +30,16 @@ Global
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.WINCE|Any CPU.ActiveCfg = Debug|Any CPU
 		{68E17BC4-A3EF-49CC-989D-6E471B60137E}.WINCE|Any CPU.Build.0 = Debug|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.DBG40|Any CPU.ActiveCfg = DBG40|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.DBG40|Any CPU.Build.0 = DBG40|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.DIST40|Any CPU.ActiveCfg = DIST40|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.DIST40|Any CPU.Build.0 = DIST40|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47B2C4C2-681C-475F-8083-611F072B51CD}.WINCE|Any CPU.ActiveCfg = Release|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.DBG40|Any CPU.ActiveCfg = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.DBG40|Any CPU.Build.0 = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.DIST40|Any CPU.ActiveCfg = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.DIST40|Any CPU.Build.0 = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.Release|Any CPU.Build.0 = Release|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.WINCE|Any CPU.ActiveCfg = Debug|Any CPU
+		{480B3F64-D3BE-43F3-8640-D7DC15A8C576}.WINCE|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

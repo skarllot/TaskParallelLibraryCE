@@ -1,4 +1,4 @@
-﻿#if !NET40
+﻿#if NET35 || WindowsCE
 namespace System.Threading.Tasks
 {
     /// <summary>
@@ -125,4 +125,8 @@ namespace System.Threading.Tasks
         #endregion
     }
 }
+#else
+using System.Runtime.CompilerServices;
+
+[assembly: TypeForwardedTo(typeof(System.Threading.Tasks.Task<>))]
 #endif

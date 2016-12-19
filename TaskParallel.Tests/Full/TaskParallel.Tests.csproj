@@ -62,12 +62,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\TaskParallel\Full\TaskParallel.Full.csproj">
-      <Project>{D78F0942-7465-44E3-95EC-B60AC01938B8}</Project>
-      <Name>TaskParallel.Full</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

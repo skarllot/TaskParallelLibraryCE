@@ -52,32 +52,54 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Consts.cs">
-      <Link>Consts.cs</Link>
+    <Compile Include="..\Core\AggregateException.cs">
+      <Link>AggregateException.cs</Link>
     </Compile>
-    <Compile Include="AggregateException.cs" />
-    <Compile Include="Compatibility\SynchronizationContext.cs" />
-    <Compile Include="Compatibility\TaskEx.cs" />
-    <Compile Include="Compatibility\ThreadEx.cs" />
-    <Compile Include="Future.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Include="..\Core\SynchronizationContext.cs">
+      <Link>Compatibility\SynchronizationContext.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Compatibility\TaskEx.cs">
+      <Link>Compatibility\TaskEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Compatibility\ThreadEx.cs">
+      <Link>Compatibility\ThreadEx.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Future.cs">
+      <Link>Future.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Properties\Resources.Designer.cs">
+      <Link>Properties\Resources.Designer.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SpinWait.cs" />
-    <Compile Include="Task.cs" />
-    <Compile Include="TaskFactory.cs" />
-    <Compile Include="TaskStatus.cs" />
+    <Compile Include="..\Core\SpinWait.cs">
+      <Link>SpinWait.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Task.cs">
+      <Link>Task.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\TaskFactory.cs">
+      <Link>TaskFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\TaskStatus.cs">
+      <Link>TaskStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Core\Consts.cs">
+      <Link>Consts.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Include="..\Core\Properties\Resources.pt.resx">
+      <Link>Properties\Resources.pt.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Core\Properties\Resources.resx">
+      <Link>Properties\Resources.resx</Link>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.pt.resx">
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(SolutionDir)tools\Microsoft.CompactFramework.CSharp.targets" />
