@@ -2,7 +2,7 @@
 
 set SolutionDir=%~dp0
 set AssemblyName=TaskParallel
-set SourceCodePath=%SolutionDir%TaskParallel
+set SourceCodePath=%SolutionDir%
 
 echo Copying source files...
 
@@ -19,11 +19,10 @@ CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net452 %AssemblyName% ||
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net46 %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net461 %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net462 %AssemblyName% || EXIT /B 1
-CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile136 %AssemblyName% || EXIT /B 1
-CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile7 %AssemblyName% || EXIT /B 1
-CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile111 %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% netstandard1.0 %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% netstandard1.3 %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile259 %AssemblyName% || EXIT /B 1
-CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile44 %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% profile328 %AssemblyName% || EXIT /B 1
 
 echo Copy complete. Starting NuGet packaging...
 

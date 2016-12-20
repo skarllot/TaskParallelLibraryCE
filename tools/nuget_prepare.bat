@@ -17,27 +17,32 @@ if "%platform%" == "profile2" (
 )
 
 if "%platform%" == "profile7" (
-	set platform=portable-net45+win8+MonoAndroid+MonoTouch+XamariniOS
+	set platform=portable-net45+win8
 	GOTO SetupEnd
 )
 
 if "%platform%" == "profile111" (
-	set platform=portable-net45+win8+wpa81+MonoAndroid+MonoTouch+XamariniOS
+	set platform=portable-net45+win8+wpa81
 	GOTO SetupEnd
 )
 
 if "%platform%" == "profile136" (
-	set platform=portable-net40+sl5+win8+wp8+MonoAndroid+MonoTouch+XamariniOS
+	set platform=portable-net40+sl5+win8+wp8
 	GOTO SetupEnd
 )
 
 if "%platform%" == "profile44" (
-	set platform=portable-net451+win81+MonoAndroid+MonoTouch+XamariniOS
+	set platform=portable-net451+win81
 	GOTO SetupEnd
 )
 
 if "%platform%" == "profile259" (
-	set platform=portable-net45+win8+wpa81+wp8+MonoAndroid+MonoTouch+XamariniOS
+	set platform=portable-net45+win8+wpa81+wp8
+	GOTO SetupEnd
+)
+
+if "%platform%" == "profile328" (
+	set platform=portable-net40+sl5+win8+wpa81+wp8
 	GOTO SetupEnd
 )
 
