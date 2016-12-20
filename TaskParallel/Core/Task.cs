@@ -849,7 +849,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">
         /// The <see cref="Task"/> has been disposed.
         /// </exception>
-        public WaitHandle AsyncWaitHandle
+        WaitHandle IAsyncResult.AsyncWaitHandle
         {
             get
             {
@@ -865,7 +865,7 @@ namespace System.Threading.Tasks
         /// Gets an indication of whether the asynchronous operation completed synchronously.
         /// </summary>
         /// <value>true if the asynchronous operation completed synchronously; otherwise, false.</value>
-        public bool CompletedSynchronously
+        bool IAsyncResult.CompletedSynchronously
         {
             get { return _runSync; }
         }

@@ -100,13 +100,15 @@ namespace TaskParallel.Tests
             Task<int> target = new Task<int>(action);
             target.Start();
             target.Wait();
-            Assert.IsFalse(target.CompletedSynchronously);
+            Assert.IsFalse(((IAsyncResult)target).CompletedSynchronously);
             Assert.AreEqual(1, counter);
 
             target = new Task<int>(action);
             target.RunSynchronously();
-            Assert.IsTrue(target.CompletedSynchronously);
+#if !NET35
+            Assert.IsTrue(((IAsyncResult)target).CompletedSynchronously);
             Assert.AreEqual(2, counter);
+#endif
         }
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace TaskParallel.Tests
             Func<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
-            Assert.IsTrue(target.AsyncWaitHandle.WaitOne());
+            Assert.IsTrue(((IAsyncResult)target).AsyncWaitHandle.WaitOne());
             Assert.AreEqual(1, counter);
         }
 
@@ -182,6 +184,7 @@ namespace TaskParallel.Tests
             Assert.AreEqual(1, counter);
         }
 
+#if WindowsCE
         /// <summary>
         ///A test for TaskCallback
         ///</summary>
@@ -191,16 +194,11 @@ namespace TaskParallel.Tests
         {
             int counter = 0;
             Func<int> action = () => Interlocked.Increment(ref counter);
-#if NETFX_CE
             Task_Accessor<int> target = new Task_Accessor<int>(action);
             target.TaskStartAction(null);
-#else
-            var target = new Task<int>(action);
-            var privateTarget = new PrivateObject(target);
-            privateTarget.Invoke("TaskStartAction", new object[] { null });
-#endif
             Assert.AreEqual(1, counter);
         }
+#endif
 
         /// <summary>
         ///A test for Start
@@ -231,6 +229,8 @@ namespace TaskParallel.Tests
             Assert.AreEqual(1, counter);
         }
 
+#if WindowsCE
+
         /// <summary>
         ///A test for EnsureStartOnce
         ///</summary>
@@ -240,16 +240,9 @@ namespace TaskParallel.Tests
         public void EnsureStartOnceTest()
         {
             Func<int> action = () => 1;
-#if NETFX_CE
             Task_Accessor<int> target = new Task_Accessor<int>(action);
             target.EnsureStartOnce();
             target.EnsureStartOnce();
-#else
-            var target = new Task<int>(action);
-            var privateTarget = new PrivateObject(target);
-            privateTarget.Invoke("EnsureStartOnce");
-            privateTarget.Invoke("EnsureStartOnce");
-#endif
         }
 
         /// <summary>
@@ -275,6 +268,8 @@ namespace TaskParallel.Tests
             Assert.AreEqual(1, target.Exception.InnerExceptions.Count);
             Assert.IsTrue(target.Exception.InnerExceptions[0] is ArgumentNullException);
         }
+
+#endif
 
         /// <summary>
         ///A test for Dispose
@@ -323,6 +318,8 @@ namespace TaskParallel.Tests
             Assert.AreEqual(3, value);
         }
 
+#if WindowsCE
+
         /// <summary>
         ///A test for BeginWait
         ///</summary>
@@ -341,6 +338,8 @@ namespace TaskParallel.Tests
             }, null);
             target.Wait();
         }
+
+#endif
 
         /// <summary>
         ///A test for Task Constructor

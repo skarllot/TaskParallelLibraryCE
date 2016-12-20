@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Compatibility;
 
 namespace System.Tests
 {
@@ -30,7 +31,7 @@ namespace System.Tests
         {
             var task = Task.Factory.StartNew(() =>
             {
-                Task.Delay(Timeout).Wait();
+                TaskEx.Delay(Timeout).Wait();
                 throw new Exception(ExceptionMessage);
             });
             if (!task.Wait(Timeout * 2))
@@ -48,7 +49,7 @@ namespace System.Tests
         [TestMethod]
         public void TaskResultCreatedTest()
         {
-            var outerTask = Task.Run(() =>
+            var outerTask = TaskEx.Run(() =>
             {
                 var task = new Task<int>(() => 15);
                 return task.Result;
@@ -61,7 +62,7 @@ namespace System.Tests
         {
             int counter = 0;
             var task = new Task(() => Interlocked.Increment(ref counter));
-            if (Task.WhenAny(task, Task.Delay(Timeout)).Result == task)
+            if (TaskEx.WhenAny(task, TaskEx.Delay(Timeout)).Result == task)
                 Assert.Fail("Awaiting for task should not start it");
 
             Assert.AreEqual(0, counter);
@@ -115,13 +116,13 @@ namespace System.Tests
         public void TaskWhenAllTest()
         {
             int counter = 0;
-            var whenAll = Task.WhenAll(
-                Task.Run(() =>
+            var whenAll = TaskEx.WhenAll(
+                TaskEx.Run(() =>
                 {
                     Thread.Sleep(10);
                     Interlocked.Increment(ref counter);
                 }),
-                Task.Run(() =>
+                TaskEx.Run(() =>
                 {
                     Thread.Sleep(8);
                     Interlocked.Increment(ref counter);
