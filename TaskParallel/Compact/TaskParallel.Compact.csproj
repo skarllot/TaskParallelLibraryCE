@@ -70,8 +70,7 @@
     <Compile Include="..\Core\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Properties\Resources.Designer.cs">
-      <Link>Properties\Resources.Designer.cs</Link>
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -96,8 +95,7 @@
     <EmbeddedResource Include="..\Core\Properties\Resources.pt.resx">
       <Link>Properties\Resources.pt.resx</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Core\Properties\Resources.resx">
-      <Link>Properties\Resources.resx</Link>
+    <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
