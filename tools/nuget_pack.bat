@@ -22,7 +22,7 @@ mkdir "%nuget_folder%" > nul 2>&1
 del "%nuget_folder%\%AssemblyName%.nuspec" > nul 2>&1
 copy "%nuget_nuspec%" "%nuget_folder%" > nul
 
-REM %NuGetCommand% pack %nuget_folder%\%AssemblyName%.nuspec -Version %AssemblyVersion% -Symbols -OutputDirectory %output%
-%NuGetCommand% pack %nuget_folder%\%AssemblyName%.nuspec -Version %AssemblyVersion% -OutputDirectory %output%
+%NuGetCommand% pack %nuget_folder%\%AssemblyName%.nuspec -Version %AssemblyVersion% -Symbols -OutputDirectory %output%
+REM %NuGetCommand% pack %nuget_folder%\%AssemblyName%.nuspec -Version %AssemblyVersion% -OutputDirectory %output%
 
 rmdir /s/q "%SolutionDir%.nuget" > nul 2>&1
