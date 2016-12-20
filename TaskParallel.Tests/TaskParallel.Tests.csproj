@@ -38,11 +38,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
+      <HintPath>..\packages\TaskParallelLibrary.1.0.2856.0\lib\Net35\System.Threading.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="TaskParallel">
-      <HintPath>$(SolutionDir)TaskParallel\Core\bin\Debug\net35\TaskParallel.dll</HintPath>
+      <HintPath>..\TaskParallel\bin\Debug\net35\TaskParallel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>

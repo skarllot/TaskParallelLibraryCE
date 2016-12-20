@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C3AB3A6F-4D65-4E1C-B1F6-06105F7B9390}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.TXT = LICENSE.TXT
+		NuGet.Config = NuGet.Config
 		README.md = README.md
 	EndProjectSection
 EndProject
