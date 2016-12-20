@@ -58,13 +58,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Compact\FutureTest.cs">
+    <Compile Include="$(SolutionDir)WindowsCE\TaskParallel.Tests\FutureTest.cs">
       <Link>FutureTest.cs</Link>
     </Compile>
-    <Compile Include="..\Compact\TaskBehavior.cs">
+    <Compile Include="$(SolutionDir)WindowsCE\TaskParallel.Tests\TaskBehavior.cs">
       <Link>TaskBehavior.cs</Link>
     </Compile>
-    <Compile Include="..\Compact\TaskTest.cs">
+    <Compile Include="$(SolutionDir)WindowsCE\TaskParallel.Tests\TaskTest.cs">
       <Link>TaskTest.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

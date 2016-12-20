@@ -52,22 +52,22 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Core\AggregateException.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\AggregateException.cs">
       <Link>AggregateException.cs</Link>
     </Compile>
-    <Compile Include="..\Core\SynchronizationContext.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\SynchronizationContext.cs">
       <Link>Compatibility\SynchronizationContext.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Compatibility\TaskEx.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Compatibility\TaskEx.cs">
       <Link>Compatibility\TaskEx.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Compatibility\ThreadEx.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Compatibility\ThreadEx.cs">
       <Link>Compatibility\ThreadEx.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Future.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Future.cs">
       <Link>Future.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Properties\AssemblyInfo.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -75,24 +75,24 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="..\Core\SpinWait.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\SpinWait.cs">
       <Link>SpinWait.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Task.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Task.cs">
       <Link>Task.cs</Link>
     </Compile>
-    <Compile Include="..\Core\TaskFactory.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\TaskFactory.cs">
       <Link>TaskFactory.cs</Link>
     </Compile>
-    <Compile Include="..\Core\TaskStatus.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\TaskStatus.cs">
       <Link>TaskStatus.cs</Link>
     </Compile>
-    <Compile Include="..\Core\Consts.cs">
+    <Compile Include="$(SolutionDir)..\TaskParallel\Consts.cs">
       <Link>Consts.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Core\Properties\Resources.pt.resx">
+    <EmbeddedResource Include="$(SolutionDir)..\TaskParallel\Properties\Resources.pt.resx">
       <Link>Properties\Resources.pt.resx</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -100,7 +100,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(SolutionDir)tools\Microsoft.CompactFramework.CSharp.targets" />
+  <Import Project="$(SolutionDir)..\tools\Microsoft.CompactFramework.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">

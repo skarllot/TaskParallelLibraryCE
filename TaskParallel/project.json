@@ -17,7 +17,6 @@
   },
 
   "buildOptions": {
-    "outputName": "TaskParallel",
     "xmlDoc": true
   },
 

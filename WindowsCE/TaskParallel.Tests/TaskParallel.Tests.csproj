@@ -61,9 +61,9 @@
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TaskParallel\Compact\TaskParallel.Compact.csproj">
+    <ProjectReference Include="..\TaskParallel\TaskParallel.csproj">
       <Project>{ED6B187A-B594-43BE-98CB-818A556F12C7}</Project>
-      <Name>TaskParallel.Compact</Name>
+      <Name>TaskParallel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
