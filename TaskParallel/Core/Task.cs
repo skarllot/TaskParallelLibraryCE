@@ -1,4 +1,4 @@
-﻿#if NET35 || WindowsCE
+﻿#if WindowsCE
 using System.Collections.Generic;
 using System.Linq;
 

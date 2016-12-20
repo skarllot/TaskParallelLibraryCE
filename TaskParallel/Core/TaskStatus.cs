@@ -1,4 +1,4 @@
-﻿#if NET35 || WindowsCE
+﻿#if WindowsCE
 namespace System.Threading.Tasks
 {
     /// <summary>

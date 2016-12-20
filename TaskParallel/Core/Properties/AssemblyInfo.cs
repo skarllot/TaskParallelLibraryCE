@@ -15,10 +15,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+#if !Profile259 && !Profile328
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(Consts.ComVisible)]
+[assembly: ComVisible(false)]
+#endif
 
 // Version information for an assembly consists of the following four values:
 //

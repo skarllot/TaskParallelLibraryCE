@@ -1,8 +1,4 @@
-﻿#if NETSTANDARD1_0 || NETSTANDARD1_3
-using System.Threading.Tasks;
-#endif
-
-namespace System.Threading.Compatibility
+﻿namespace System.Threading.Compatibility
 {
     /// <summary>
     /// Provides a portable <see cref="Sleep(int)"/>.
@@ -24,8 +20,10 @@ namespace System.Threading.Compatibility
         /// </exception>
         public static void Sleep(int millisecondsTimeout)
         {
-#if NETSTANDARD1_0 || NETSTANDARD1_3
-            Task.Delay(millisecondsTimeout).Wait();
+#if NETSTANDARD1_0 || NETSTANDARD1_3 
+            Tasks.Task.Delay(millisecondsTimeout).Wait();
+#elif Profile259 || Profile328
+            Tasks.Compatibility.TaskEx.Delay(millisecondsTimeout);
 #else
             Thread.Sleep(millisecondsTimeout);
 #endif

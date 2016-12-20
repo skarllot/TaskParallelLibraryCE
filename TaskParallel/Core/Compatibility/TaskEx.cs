@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 
-#if NET40
+#if NET35 || Profile328
 using System.Linq;
 #endif
 
 namespace System.Threading.Tasks.Compatibility
 {
     /// <summary>
-    /// Provides new <see cref="Task"/> methods introduced in .NET 4.5 and .NET 4.6.
+    /// Provides methods for creating and manipulating tasks.
     /// </summary>
     public static class TaskEx
     {
-#region FromResult / FromException
+        #region FromResult / FromException
 
         /// <summary>
         /// Creates a <see cref="Task{TResult}"/> that's completed successfully with the specified result.
@@ -21,10 +21,12 @@ namespace System.Threading.Tasks.Compatibility
         /// <returns>The successfully completed task.</returns>
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
-#if NET40
+#if NET35 || Profile328
             var tcs = new TaskCompletionSource<TResult>();
             tcs.SetResult(result);
             return tcs.Task;
+#elif NET40
+            return Tasks.TaskEx.FromResult(result);
 #else
             return Task.FromResult<TResult>(result);
 #endif
@@ -36,7 +38,7 @@ namespace System.Threading.Tasks.Compatibility
         /// <returns>The faulted task.</returns>
         public static Task<TResult> FromException<TResult>(Exception exception)
         {
-#if NET40 || NET45 || NETSTANDARD1_0
+#if NET35 || NET40 || NET45 || NETSTANDARD1_0 || Profile259 || Profile328
             var tcs = new TaskCompletionSource<TResult>();
             tcs.SetException(exception);
             return tcs.Task;
@@ -45,9 +47,9 @@ namespace System.Threading.Tasks.Compatibility
 #endif
         }
 
-#endregion
+        #endregion
 
-#region Run methods
+        #region Run methods
 
         /// <summary>
         /// Queues the specified work to run on the ThreadPool and returns a Task handle for that work.
@@ -59,9 +61,11 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task Run(Action action)
         {
-#if NET40
+#if NET35 || Profile328
             return Task.Factory.StartNew(action, CancellationToken.None,
                 TaskCreationOptions.None, TaskScheduler.Default);
+#elif NET40
+            return Tasks.TaskEx.Run(action);
 #else
             return Task.Run(action);
 #endif
@@ -76,9 +80,11 @@ namespace System.Threading.Tasks.Compatibility
         /// <returns>A <see cref="Task{TResult}"/> that represents the work queued to execute in the ThreadPool.</returns>
         public static Task<TResult> Run<TResult>(Func<TResult> function)
         {
-#if NET40
+#if NET35 || Profile328
             return Task.Factory.StartNew(function, CancellationToken.None,
                 TaskCreationOptions.None, TaskScheduler.Default);
+#elif NET40
+            return Tasks.TaskEx.Run(function);
 #else
             return Task.Run<TResult>(function);
 #endif
@@ -95,10 +101,12 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task Run(Func<Task> function)
         {
-#if NET40
+#if NET35 || Profile328
             Action proxy = () => { function().Wait(); };
             return Task.Factory.StartNew(proxy, CancellationToken.None,
                 TaskCreationOptions.None, TaskScheduler.Default);
+#elif NET40
+            return Tasks.TaskEx.Run(function);
 #else
             return Task.Run(function);
 #endif
@@ -116,7 +124,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
-#if NET40
+#if NET35 || Profile328
             Func<TResult> proxy = () =>
             {
                 var task = function();
@@ -125,14 +133,16 @@ namespace System.Threading.Tasks.Compatibility
             };
             return Task.Factory.StartNew<TResult>(proxy, CancellationToken.None,
                 TaskCreationOptions.None, TaskScheduler.Default);
+#elif NET40
+            return Tasks.TaskEx.Run(function);
 #else
             return Task.Run(function);
 #endif
         }
 
-#endregion
+        #endregion
 
-#region Delay methods
+        #region Delay methods
 
         /// <summary>
         /// Creates a Task that will complete after a time delay.
@@ -147,7 +157,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </remarks>
         public static Task Delay(TimeSpan delay)
         {
-#if NET40
+#if NET35 || Profile328
             long totalMilliseconds = (long)delay.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
@@ -155,6 +165,8 @@ namespace System.Threading.Tasks.Compatibility
             }
 
             return Delay((int)totalMilliseconds);
+#elif NET40
+            return Tasks.TaskEx.Delay(delay);
 #else
             return Task.Delay(delay);
 #endif
@@ -173,7 +185,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </remarks>
         public static Task Delay(int millisecondsDelay)
         {
-#if NET40
+#if NET35 || Profile328
             if (millisecondsDelay < -1)
                 throw new ArgumentOutOfRangeException("millisecondsDelay");
 
@@ -184,17 +196,23 @@ namespace System.Threading.Tasks.Compatibility
             {
                 var wait = new ManualResetEvent(false);
                 wait.WaitOne(millisecondsDelay);
+#if NET35
+                wait.Close();
+#else
                 wait.Dispose();
+#endif
                 wait = null;
             });
+#elif NET40
+            return Tasks.TaskEx.Delay(millisecondsDelay);
 #else
-            return Task.Delay(millisecondsDelay);
+                return Task.Delay(millisecondsDelay);
 #endif
         }
 
-#endregion
+        #endregion
 
-#region WhenAll
+        #region WhenAll
 
         /// <summary>
         /// Creates a task that will complete when all of the supplied tasks have completed.
@@ -209,13 +227,15 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
             // Take a more efficient path if tasks is actually an array
             Task[] taskArray = tasks as Task[];
             return WhenAll(taskArray ?? tasks.ToArray());
+#elif NET40
+            return Tasks.TaskEx.WhenAll(tasks);
 #else
             return Task.WhenAll(tasks);
 #endif
@@ -234,7 +254,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task WhenAll(params Task[] tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
@@ -251,6 +271,8 @@ namespace System.Threading.Tasks.Compatibility
             {
                 Task.WaitAll(tasks);
             });
+#elif NET40
+            return Tasks.TaskEx.WhenAll(tasks);
 #else
             return Task.WhenAll(tasks);
 #endif
@@ -269,13 +291,15 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>       
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
             // Take a more efficient path if tasks is actually an array
             Task<TResult>[] taskArray = tasks as Task<TResult>[];
             return WhenAll(taskArray ?? tasks.ToArray());
+#elif NET40
+            return Tasks.TaskEx.WhenAll(tasks);
 #else
             return Task.WhenAll<TResult>(tasks);
 #endif
@@ -294,7 +318,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
@@ -316,14 +340,16 @@ namespace System.Threading.Tasks.Compatibility
 
                 return results;
             });
+#elif NET40
+            return Tasks.TaskEx.WhenAll(tasks);
 #else
             return Task.WhenAll<TResult>(tasks);
 #endif
         }
 
-#endregion
+        #endregion
 
-#region WhenAny
+        #region WhenAny
 
         /// <summary>
         /// Creates a task that will complete when any of the supplied tasks have completed.
@@ -338,13 +364,15 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
             // Take a more efficient path if tasks is actually an array
             Task[] taskArray = tasks as Task[];
             return WhenAny(taskArray ?? tasks.ToArray());
+#elif NET40
+            return Tasks.TaskEx.WhenAny(tasks);
 #else
             return Task.WhenAny(tasks);
 #endif
@@ -363,7 +391,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<Task> WhenAny(params Task[] tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
             if (tasks.Length == 0)
@@ -380,6 +408,8 @@ namespace System.Threading.Tasks.Compatibility
                 int idx = Task.WaitAny(tasks);
                 return tasks[idx];
             });
+#elif NET40
+            return Tasks.TaskEx.WhenAny(tasks);
 #else
             return Task.WhenAny(tasks);
 #endif
@@ -398,13 +428,15 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
             // Take a more efficient path if tasks is actually an array
             Task<TResult>[] taskArray = tasks as Task<TResult>[];
             return WhenAny(taskArray ?? tasks.ToArray());
+#elif NET40
+            return Tasks.TaskEx.WhenAny(tasks);
 #else
             return Task.WhenAny<TResult>(tasks);
 #endif
@@ -423,7 +455,7 @@ namespace System.Threading.Tasks.Compatibility
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
         {
-#if NET40
+#if NET35 || Profile328
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
             if (tasks.Length == 0)
@@ -440,11 +472,13 @@ namespace System.Threading.Tasks.Compatibility
                 int idx = Task.WaitAny(tasks);
                 return tasks[idx];
             });
+#elif NET40
+            return Tasks.TaskEx.WhenAny(tasks);
 #else
             return Task.WhenAny<TResult>(tasks);
 #endif
         }
 
-#endregion
+        #endregion
     }
 }

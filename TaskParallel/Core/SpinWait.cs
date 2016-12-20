@@ -1,9 +1,5 @@
-﻿#if NET35 || WindowsCE
+﻿#if WindowsCE || Profile328
 using System.Diagnostics.CodeAnalysis;
-
-#if !WindowsCE
-using System.Security.Permissions;
-#endif
 
 namespace System.Threading
 {
@@ -48,8 +44,7 @@ namespace System.Threading
     /// fear of unnecessary allocation overheads. SpinWait is not generally useful for ordinary applications.
     /// In most cases, you should use the synchronization classes provided by the .NET Framework, such as
     /// <see cref="System.Threading.Monitor"/>. For most purposes where spin waiting is required, however,
-    /// the <see cref="SpinWait"/> type should be preferred over the <see
-    /// cref="System.Threading.Thread.SpinWait"/> method.
+    /// the <see cref="SpinWait"/> type should be preferred over the <see cref="SpinWait"/> method.
     /// </para>
     /// <para>
     /// While SpinWait is designed to be used in concurrent applications, it is not designed to be
@@ -57,9 +52,6 @@ namespace System.Threading
     /// threads must spin, each should use its own instance of SpinWait.
     /// </para>
     /// </remarks>
-#if !WindowsCE
-    [HostProtection(Synchronization = true, ExternalThreading = true)]
-#endif
     public struct SpinWait
     {
         // These constants determine the frequency of yields versus spinning. The
@@ -140,7 +132,7 @@ namespace System.Threading
                 {
                     // Should Yield
                     // TODO: benchmark SpinWait on multi- and single-processor.
-#if WindowsCE
+#if WindowsCE || Profile328
                     Compatibility.ThreadEx.Sleep(0);
 #else
                     Thread.SpinWait(4 << YIELD_THRESHOLD);
@@ -160,7 +152,7 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
-#if WindowsCE
+#if WindowsCE || Profile328
                 Compatibility.ThreadEx.Sleep(0);
 #else
                 Thread.SpinWait(4 << m_count);
@@ -361,4 +353,8 @@ namespace System.Threading
     }
 
 }
+#else
+using System.Runtime.CompilerServices;
+
+[assembly: TypeForwardedTo(typeof(System.Threading.SpinWait))]
 #endif

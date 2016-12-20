@@ -4,15 +4,18 @@ internal static class Consts
     public const string Company = "Fabrício Godoy";
     public const string Product = "TaskParallelCE";
     public const string Copyright = "Copyright © Fabrício Godoy 2016";
-    public const bool ComVisible = false;
     public const string Version = "3.0.0";
 
 #if WindowsCE
     public const string Title = "TaskParallel (.NET 3.5 CF)";
-#elif NETSTANDARD1_0
-    public const string Title = "TaskParallel (Standard 1.0)";
 #elif NETSTANDARD1_3
     public const string Title = "TaskParallel (Standard 1.3)";
+#elif NETSTANDARD1_0
+    public const string Title = "TaskParallel (Standard 1.0)";
+#elif Profile259
+    public const string Title = "TaskParallel (PCL Profile259)";
+#elif Profile328
+    public const string Title = "TaskParallel (PCL Profile328)";
 #elif NET46
     public const string Title = "TaskParallel (.NET 4.6)";
 #elif NET45
@@ -23,7 +26,7 @@ internal static class Consts
     public const string Title = "TaskParallel (.NET 3.5)";
 #endif
 
-#if NET35 || NET40 || WindowsCE
+#if NET35 || NET40 || WindowsCE || Profile259 || Profile328
     /// <summary>
     /// Gets the type itself (for Resource compatibility).
     /// </summary>

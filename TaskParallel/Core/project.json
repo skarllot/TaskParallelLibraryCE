@@ -1,5 +1,6 @@
 {
-  "title": "Provides a backport of Task for .NET 3.5 Compact Edition",
+  "title": "Task Parallel Library for .NET 3.5 Compact Framework",
+  "description": "Provides a backport of Task for .NET 3.5 Compact Framework",
   "version": "3.0.0-*",
   "language": "en-US",
   "authors": [ "Fabricio Godoy" ],
@@ -8,6 +9,7 @@
     "projectUrl": "https://github.com/skarllot/TaskParallelLibraryCE",
     "licenseUrl": "https://github.com/skarllot/TaskParallelLibraryCE/blob/master/LICENSE.TXT",
     "requireLicenseAcceptance": false,
+    "tags": [ "task", "windowsce", "compact", "net35-cf", "net35", "backport" ],
     "repository": {
       "type": "git",
       "url": "git://github.com/skarllot/TaskParallelLibraryCE"
@@ -38,8 +40,16 @@
         "System.Threading.Tasks": "4.3.0"
       }
     },
-    "net35": {},
-    "net40": {},
+    "net35": {
+      "dependencies": {
+        "TaskParallelLibrary": "1.0.2856"
+      }
+    },
+    "net40": {
+      "dependencies": {
+        "Microsoft.Bcl.Async": "1.0.168"
+      }
+    },
     "net45": {},
     "net451": {
       "buildOptions": {
@@ -60,6 +70,33 @@
     "net462": {
       "buildOptions": {
         "define": [ "NET46" ]
+      }
+    },
+    ".NETPortable,Version=v4.5,Profile=Profile259": {
+      "buildOptions": {
+        "define": [ "Profile259" ]
+      },
+      "frameworkAssemblies": {
+        "mscorlib": "",
+        "System": "",
+        "System.Core": "",
+        "System.Diagnostics.Debug": "",
+        "System.Globalization": "",
+        "System.Reflection": "",
+        "System.Resources.ResourceManager": "",
+        "System.Runtime": "",
+        "System.Threading": "",
+        "System.Threading.Tasks": ""
+      }
+    },
+    ".NETPortable,Version=v4.0,Profile=Profile328": {
+      "buildOptions": {
+        "define": [ "Profile328" ]
+      },
+      "frameworkAssemblies": {
+        "mscorlib": "",
+        "System": "",
+        "System.Core": ""
       }
     }
   }
