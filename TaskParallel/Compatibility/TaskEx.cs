@@ -206,7 +206,7 @@ namespace System.Threading.Tasks.Compatibility
 #elif NET40
             return Tasks.TaskEx.Delay(millisecondsDelay);
 #else
-                return Task.Delay(millisecondsDelay);
+            return Task.Delay(millisecondsDelay);
 #endif
         }
 

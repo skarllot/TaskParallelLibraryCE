@@ -5,10 +5,6 @@
     /// </summary>
     public static class ThreadEx
     {
-#if (!NET45 && PCL)
-        static readonly ManualResetEvent _sleep = new ManualResetEvent(false);
-#endif
-        
         /// <summary>
         /// Suspends the current thread for a specified time.
         /// </summary>
@@ -20,9 +16,9 @@
         /// </exception>
         public static void Sleep(int millisecondsTimeout)
         {
-#if NETSTANDARD1_0 || NETSTANDARD1_3 
+#if NETSTANDARD1_0 || NETSTANDARD1_3 || Profile259
             Tasks.Task.Delay(millisecondsTimeout).Wait();
-#elif Profile259 || Profile328
+#elif Profile328
             Tasks.Compatibility.TaskEx.Delay(millisecondsTimeout);
 #else
             Thread.Sleep(millisecondsTimeout);

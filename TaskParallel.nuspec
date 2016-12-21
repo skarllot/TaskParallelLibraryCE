@@ -3,18 +3,15 @@
   <metadata>
     <id>TaskParallelLibraryCE</id>
     <version>$version$</version>
-	<title>Provides a backport of Task for .NET 3.5 Compact Edition</title>
+	<title>Provides a backport of Task for .NET Compact Framework 3.5</title>
     <authors>Fabricio Godoy</authors>
     <owners>skarllot,fgodoy-verion</owners>
 	<licenseUrl>https://github.com/skarllot/TaskParallelLibraryCE/blob/master/LICENSE.TXT</licenseUrl>
     <projectUrl>https://github.com/skarllot/TaskParallelLibraryCE</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The package includes:
-* Task and Task&lt;T&gt; for executing asynchronous operations.
-* SpinWait provides SpinWait and SpinUntil for all platforms.
-* TaskEx provides new methods from .NET 4.5 and .NET 4.6 such as FromResult, FromException and Run.
-
-Tested on Windows CE and Pocket PC.</description>
+    <description>Provides a Task class for Compact Framework 3.5 with similar functionality as provided by Framework 4. For another framework it simply forwards the type to corresponding assembly.</description>
+    <language>en-US</language>
+    <tags>task,windowsce,compact,net35-cf,net35,backport</tags>
 	<frameworkAssemblies>
 		<frameworkAssembly assemblyName="TaskParallel" targetFramework="net35-cf" />
 		<frameworkAssembly assemblyName="TaskParallel" targetFramework="net35" />

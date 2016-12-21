@@ -70,6 +70,10 @@ if %nodoc% == 1 (
 if exist "%output%\%platform%\%assembly%.mdb" (
 	copy "%output%\%platform%\%assembly%.mdb" "%nuget_folder%\lib\%platform%\*.*" > nul || EXIT /B 1
 )
+if exist "%output%\%platform%\pt\%assembly%.*" (
+    mkdir "%nuget_folder%\lib\%platform%\pt" > nul || EXIT /B 1
+	copy "%output%\%platform%\pt\%assembly%.*" "%nuget_folder%\lib\%platform%\pt\*.*" > nul || EXIT /B 1
+)
 
 
 set platform=

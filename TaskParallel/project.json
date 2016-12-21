@@ -1,6 +1,6 @@
 {
-  "title": "Task Parallel Library for .NET 3.5 Compact Framework",
-  "description": "Provides a backport of Task for .NET 3.5 Compact Framework",
+  "title": "Task Parallel Library for .NET Compact Framework 3.5",
+  "description": "Provides a Task class for Compact Framework 3.5 with similar functionality as provided by Framework 4. For another framework it simply forwards the type to corresponding assembly.",
   "version": "3.0.0-*",
   "language": "en-US",
   "authors": [ "Fabricio Godoy" ],
