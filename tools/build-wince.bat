@@ -39,7 +39,7 @@ REM ============================================================================
 REM Setup variables
 REM ============================================================================
 
-set SolutionFile=WindowsCE\%SolutionFile%
+set SolutionFile=WindowsCE\%SolutionName%.sln
 set TargetDir=net35-cf
 set TargetFX=v3.5
 set Profile=
@@ -58,7 +58,6 @@ REM ============================================================================
 REM ============================================================================
 
 set Delim=%%3B
-set SolutionFile=%SolutionName%.sln
 set OutputPath=%SolutionDir%Output\%TargetDir%
 set ObjOutputPath=%SolutionDir%Output\obj
 set Constants=%Constants:;=!Delim!%

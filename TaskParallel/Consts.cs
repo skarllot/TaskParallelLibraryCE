@@ -4,7 +4,7 @@ internal static class Consts
     public const string Company = "Fabrício Godoy";
     public const string Product = "TaskParallelCE";
     public const string Copyright = "Copyright © Fabrício Godoy 2016";
-    public const string Version = "3.0.0";
+    public const string Version = "3.0.1";
 
 #if WindowsCE
     public const string Title = "TaskParallel (.NET 3.5 CF)";
