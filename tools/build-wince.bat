@@ -1,4 +1,3 @@
-@echo off
 setlocal enabledelayedexpansion
 
 REM Capture parameters

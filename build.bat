@@ -9,7 +9,7 @@ rmdir /s/q "%SolutionDir%Output" 2> nul
 mkdir "%SolutionDir%Output"
 
 CALL %SolutionDir%tools\build-wince.bat %SolutionDir% %SolutionName% %Project% || EXIT /B 1
-CALL %SolutionDir%tools\build-dotnet.bat %SolutionDir% %Project% net35 || EXIT /B 1
+CALL %SolutionDir%tools\build-dotnet.bat %SolutionDir% %Project% net35-client || EXIT /B 1
 CALL %SolutionDir%tools\build-dotnet.bat %SolutionDir% %Project% net40 || EXIT /B 1
 CALL %SolutionDir%tools\build-dotnet.bat %SolutionDir% %Project% net45 || EXIT /B 1
 CALL %SolutionDir%tools\build-dotnet.bat %SolutionDir% %Project% net451 || EXIT /B 1

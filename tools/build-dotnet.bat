@@ -1,4 +1,3 @@
-@echo off
 setlocal enabledelayedexpansion
 
 REM Capture parameters
@@ -30,6 +29,11 @@ REM Setup variables according to framework
 REM ============================================================================
 
 if "%Framework%" == "net35" (
+	set TargetDir=%Framework%
+	GOTO SetupEnd
+)
+
+if "%Framework%" == "net35-client" (
 	set TargetDir=%Framework%
 	GOTO SetupEnd
 )

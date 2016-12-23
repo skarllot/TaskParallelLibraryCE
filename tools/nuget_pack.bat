@@ -1,5 +1,3 @@
-@echo off
-
 REM Capture parameters
 set ScriptDir=%~dp0
 set SolutionDir=%~1

@@ -11,7 +11,7 @@ CALL %SolutionDir%tools\nuget_source.bat %SolutionDir% %AssemblyName% %SourceCod
 echo Preparing files for packaging...
 
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net35-cf %AssemblyName% || EXIT /B 1
-CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net35 %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net35-client %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net40 %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net45 %AssemblyName% || EXIT /B 1
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net451 %AssemblyName% || EXIT /B 1

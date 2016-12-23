@@ -1,5 +1,3 @@
-@echo off
-
 REM Capture parameters
 set SolutionDir=%~1
 set platform=%~2
