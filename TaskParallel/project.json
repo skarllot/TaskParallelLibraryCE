@@ -1,7 +1,7 @@
 {
   "title": "Task Parallel Library for .NET Compact Framework 3.5",
   "description": "Provides a Task class for Compact Framework 3.5 with similar functionality as provided by Framework 4. For another framework it simply forwards the type to corresponding assembly",
-  "version": "3.0.2-*",
+  "version": "3.0.3-*",
   "language": "en-US",
   "authors": [ "Fabricio Godoy" ],
   "packOptions": {
@@ -17,6 +17,7 @@
   },
 
   "buildOptions": {
+    "keyFile": "../tools/keypair.snk",
     "xmlDoc": true
   },
 
@@ -37,6 +38,11 @@
         "System.Resources.ResourceManager": "4.3.0",
         "System.Threading": "4.3.0",
         "System.Threading.Tasks": "4.3.0"
+      }
+    },
+    "net35-cf": {
+      "buildOptions": {
+        "define": [ "WindowsCE" ]
       }
     },
     "net35-client": {

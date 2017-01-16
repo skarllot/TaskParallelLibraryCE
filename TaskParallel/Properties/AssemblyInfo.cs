@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle(Consts.Title)]
 [assembly: AssemblyDescription(Consts.Description)]
-[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyConfiguration(Consts.Configuration)]
 [assembly: AssemblyCompany(Consts.Company)]
 [assembly: AssemblyProduct(Consts.Product)]
 [assembly: AssemblyCopyright(Consts.Copyright)]
@@ -22,18 +22,15 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 #endif
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-[assembly: AssemblyVersion(Consts.Version)]
+[assembly: AssemblyVersion(Consts.AssemblyVersion)]
+[assembly: AssemblyInformationalVersion(Consts.ProductVersion)]
 #if !WindowsCE
-[assembly: AssemblyFileVersion(Consts.Version)]
+[assembly: AssemblyFileVersion(Consts.FileVersion)]
 #endif
 
-[assembly: InternalsVisibleTo("TaskParallel.Tests")]
+[assembly: InternalsVisibleTo("TaskParallel.Tests, PublicKey=" + Consts.PublicKey)]
+
+#if CLASSIC
+[assembly: AssemblyKeyFile(@"..\..\..\tools\keypair.snk")]
+[assembly: AssemblyDelaySign(true)]
+#endif
